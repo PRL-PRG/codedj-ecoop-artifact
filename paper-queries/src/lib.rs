@@ -93,7 +93,7 @@ pub fn commits(database: &Database, _log: &Log, output: &Path) -> Result<(), std
         .into_csv_in_dir(output, "commits.csv")       
 }
 
-#[djanco(April, 2021, subset(All))]
+#[djanco(April, 2021, subset(Generic))]
 pub fn dump(database: &Database, _log: &Log, output: &Path) -> Result<(), std::io::Error>  {
     let dump_dir = format!("{}/{}", output.as_os_str().to_str().unwrap(), "dump");
     database.projects().dump_all_info_to(dump_dir)
