@@ -376,6 +376,7 @@ figures. The analysis is performed in R and Python.
 Load auxiliary functions and initialize log:
 
 ```{R, include=FALSE}
+knitr::knit_engines$set(python = reticulate::eng_python)  
 source("scripts/implementation.R")
 initializeLog()
 ```
@@ -576,7 +577,7 @@ py_install("matplotlib")
 py_install("seaborn")
 ```
 
-```{python}
+```{python fig.width=24, fig.height:8}
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -677,7 +678,7 @@ ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
 plt.xlim((-0.42, 15.43))
 
 handles, labels = ax.get_legend_handles_labels()
-ax.legend(handles[0:7], labels[0:7], frameon=False, loc = "yop") 
+ax.legend(handles[0:7], labels[0:7], frameon=False, loc = "best") 
 
 for i in range(8):
     ax.axvspan(-0.4 + 2*i, 0.60 + 2*i, facecolor='gray', alpha=0.1)
@@ -685,10 +686,79 @@ for i in range(8):
 offset = 0.0632
 
 plt.savefig(f"{r.GRAPHS_DIR}/fig6_domain_knowledge.pdf") # Domain knowledge
-
-plt
+plt.show()
 ```
 
-The plot is created in `graphs/fig6_domain_knowledge.pdf`
+The plot is created in `graphs/fig6_domain_knowledge.pdf`.
 
+#### Project selection summary
 
+```r
+summarize_dataset = function (dataset, name) {
+  dataset %>% group_by(language) %>% dplyr::summarize(
+    commits_all = n(),
+    commits_distinct = n_distinct(sha),
+    projects = n_distinct(project),
+    mean_files = mean(files),
+    median_files = median(files),
+    bugs = sum(isbug)
+  ) %>% mutate(selection = name)
+}
+
+sums = Reduce(rbind, Map(summarize_dataset, datasets, names(datasets)))
+```
+
+```r
+load_summary = function(path) {
+  result = read_delim(path, delim=',', escape_double=FALSE, escape_backslash=TRUE, quote="\"")
+  result$language = as.factor(tolower(result$language))
+  result$major = result$pctCommits >= 50
+  result$pctCommits = result$pctCommits / 100
+  invisible(result)
+}
+load_projects_summary = function(path) {
+  result = read_delim(path, delim=',', escape_double=FALSE, escape_backslash=TRUE, quote="\"")
+  invisible(result)
+}
+
+summary_p = list(
+  stars = load_projects_summary("/data/artifact-inputs/summary-stars-p.csv"),
+  changes = load_projects_summary("/data/artifact-inputs/summary-changes-p.csv"),
+  expa = load_projects_summary("/data/artifact-inputs/summary-expa-p.csv"),
+  expr = load_projects_summary("/data/artifact-inputs/summary-expr-p.csv"),
+  messages = load_projects_summary("/data/artifact-inputs/summary-messages-p.csv"),
+  commits = load_projects_summary("/data/artifact-inputs/summary-commits-p.csv"),
+  issues = load_projects_summary("/data/artifact-inputs/summary-issues-p.csv"),
+  full = load_projects_summary("/data/artifact-inputs/summary-full-p.csv")
+)
+big_table_p = Reduce(rbind, Map(function(dataset, name) { dataset %>% mutate(name = name) }, summary_p, names(summary_p)))
+big_table_p$name = factor(big_table_p$name, c("full","changes","commits","expa","expr","issues","messages","stars"))
+# just to check number of lines
+nrow(summary_p$full)
+```
+
+Remove minor languages
+
+```{r}
+remove_minor_languages = function(dataset, dataset_name) {
+  before = nrow(dataset)
+  dataset$language = tolower(as.character(dataset$language))
+  result = inner_join(dataset, major_languages, by = c("project", "language"))
+  after = nrow(result)
+  LOG(paste0("major",dataset_name,"before"), before)
+  LOGPctAndRaw(paste0("major",dataset_name,"after"), after, before)
+  result$language = as.factor(result$language)
+  result  
+  
+}
+major_languages = read_delim("/data/with_results/dataset-descriptions/dataset-projects.csv", delim=',', escape_double=FALSE, escape_backslash=TRUE, quote="\"") %>% dplyr::select(project = id, language) %>% dplyr::mutate(language=tolower(as.character(language)))
+major_datasets = Map(remove_minor_languages, datasets, names(datasets))
+```
+
+Calculate models for major languages
+
+```{r}
+major_models = Map(calculateModel, major_datasets, names(major_datasets))
+Map(function(model, name) write.csv(model %>% dplyr::select(coef, pVal), paste0(MODEL_DIR, name, ".csv")), 
+    major_models, names(major_models))
+```
