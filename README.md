@@ -1,8 +1,7 @@
 # Introduction
 
-This is the artifact for the paper *CodeDJ: Reproducible Queries over Large-Scale Software Repositories* submitted to ECOOP 2021. The artifact consists of three parts:
+This is the artifact for the paper *CodeDJ: Reproducible Queries over Large-Scale Software Repositories* submitted to ECOOP 2021. The artifact consists of the following parts:
 - **Getting started** A walkthrough through the setting up the system from scratch and executing queries;
-- **Query submission** A presentation of our mechanism query submission scheme; and
 - **Experiment** A re-creation of the experiment from the paper.
 
 ## Paper details
@@ -43,6 +42,8 @@ In order to download projects from GitHub Parasite requires the user have a GitH
 
 ### Setup
 
+(You can run all the code in this section by executing `scripts/setup.sh`.)
+
 Downloading and building Parasite (the GitHub dataset downloader):
 
 ```bash
@@ -62,6 +63,8 @@ cd ..
 ```
 
 ### Downloading a toy dataset
+
+(You can run all the code in this section by executing `scripts/download.sh`. You will have to exit parasite interactive mode manually after the download finishes.)
 
 We explain how to download a small 10-project dataset using Parasite. We also provide a pre-downloaded repository in `pregenerated/toy-dataset` so this step can be skipped.
 
@@ -107,7 +110,7 @@ We cannot provide a file with these for presentation purposes. We assume the rea
 The next step is to enter interactive console in Parasite. Provide a path to the GitHub token file via the ght flag. You can also specify the number of threads that the downloader will use with the n flag (here we use 8).
 
 ```bash
-parasite --datastore toy-dataset -ght ghtokens.csv -n 8 --interactive
+parasite/target/release/parasite --datastore toy-dataset -ght ghtokens.csv -n 8 --interactive
 ```
 
 ![](img/interactive.png)
@@ -115,7 +118,7 @@ parasite --datastore toy-dataset -ght ghtokens.csv -n 8 --interactive
 In interactive console: execute the loadall command to load substore information into memory.
 
 ```
-> loadall
+loadall
 ```
 
 ![](img/loadall.png)
@@ -125,8 +128,8 @@ downloader. This will cause Parasite to download, process and store information
 about each added repository using 8 threads.
 
 ```
- > updateall
- ```
+updateall
+```
 
 Wait until the download completes (about 15 minutes for the example dataset).
 Exit the downloader (`^C`). The example dataset is ready for querying. 
@@ -209,7 +212,7 @@ After the query is executed, the results of the query will be available at `outp
 
 ```
 language,project_id,substore,url, [...] ,stars, ...
-JavaScript,5,JavaScript,https://github.com/vuejs/vue.git, [...] ,181894, ...
+JavaScript,5,JavaScript,https://github.com/vuejs/vue.git, [...] ,181894, [...]
 TypeScript,2,TypeScript,https://github.com/angular/angular.git, [...] ,72384, [...]
 Python,8,Python,https://github.com/3b1b/manim.git, [...] ,32791, [...]
 ```
@@ -220,10 +223,53 @@ We attach a pregenerated instance of the output of this query at `pregenerated/t
 cd ..
 ```
 
-## Part 2: Query submission
+## Part 2: Experiment
 
+Thie section prepares the data and plots the graphs for Section 4 *A Case Study: Of Bugs and Languages* in ther paper. This requires downloading the data, performing the queries, and processing the results.
 
+### Download the dataset
 
-## Part 3: Experiment
+The dataset used in the analysis in the paper is constructed by downloading the repositories listed in `paper-dataset-repositories.csv`. We provide a pre-downloaded dataset in `pregrenerated/paper-dataset`.
+
+We do not recommend downloading it yourself since it will take a significant amount of time. Nevertheless, you can. You require a `ghtokens.csv` file containing at least one valid github personal access token.
+
+```
+token
+fa56454....
+```
+
+Then, add the repositories to the dataset:
+
+```bash
+parasite/target/release/parasite --datastore paper-dataset add paper-dataset-repositories.csv
+```
+
+Then, turn on interactive mode and start the download by executing `loadall` followed by `updateall`.
+
+```bash
+parasite/target/release/parasite --datastore paper-dataset -ght ghtokens.csv -n 8 --interactive
+```
+
+Wait until completed.
+
+### Perform project selection
+
+The queries used for project selection are provided in directory `paper-queries`. This is a Rust crate. This crate was created by the same procedure as prsented in section 1 of this document. The source code of all the queries can be found in `paper-queries/src/lib.rs`. The queries are executed by running `paper-queries/src/bin/djanco.rs`.
+
+To execute the queries on the pregenereated dataset run:
+
+```bash
+cd paper-queries
+cargo run --bin djanco --release -- --dataset-path pregenerated/paper-dataset --cache-path cache/pregenerated/ --output-path output
+cd ...
+```
+
+To execute the queries on freshly-downloaded dataset run:
+
+```bash
+cd paper-queries
+cargo run --bin djanco --release -- --dataset-path paper-dataset --cache-path cache/fresh/ --output-path output
+cd ...
+```
 
 
