@@ -15,28 +15,31 @@ pub fn stars(database: &Database, _log: &Log, output: &Path) -> Result<(), std::
         .group_by(project::Language)
         .sort_by(project::Stars)
         .sample(Distinct(Top(50), MinRatio(project::Commits, 0.9)))
+        .ungroup()
+        .map_into(project::Id)
         .into_csv_in_dir(output, "stars.csv")
 }
 
 #[djanco(April, 2021, subset(Generic))]
-pub fn mean_changed_paths(database: &Database, _log: &Log, output: &Path) -> Result<(), std::io::Error>  {
+pub fn mean_changes_in_commits(database: &Database, _log: &Log, output: &Path) -> Result<(), std::io::Error>  {
     database.projects()
         .group_by(project::Language)
         .sort_by(Mean(FromEach(project::Commits, Count(commit::Paths))))
         .sample(Distinct(Top(50), MinRatio(project::Commits, 0.9)))
         .ungroup()
-        .into_csv_in_dir(output, "mean_changed_paths.csv")       
+        .map_into(project::Id)
+        .into_csv_in_dir(output, "mean_changes_in_commits.csv")       
 }
 
-#[djanco(April, 2021, subset(Generic))]
-pub fn median_changed_paths(database: &Database, _log: &Log, output: &Path) -> Result<(), std::io::Error>  {
-    database.projects()
-        .group_by(project::Language)
-        .sort_by(Median(FromEach(project::Commits, Count(commit::Paths))))
-        .sample(Distinct(Top(50), MinRatio(project::Commits, 0.9)))
-        .ungroup()
-        .into_csv_in_dir(output, "median_changed_paths<.csv")       
-}
+// #[djanco(April, 2021, subset(Generic))]
+// pub fn median_changes_in_commits(database: &Database, _log: &Log, output: &Path) -> Result<(), std::io::Error>  {
+//     database.projects()
+//         .group_by(project::Language)
+//         .sort_by(Median(FromEach(project::Commits, Count(commit::Paths))))
+//         .sample(Distinct(Top(50), MinRatio(project::Commits, 0.9)))
+//         .ungroup()
+//         .into_csv_in_dir(output, "median_changed_paths.csv")       
+// }
 
 #[djanco(April, 2021, subset(Generic))]
 pub fn experienced_author(database: &Database, _log: &Log, output: &Path) -> Result<(), std::io::Error>  {
@@ -48,6 +51,7 @@ pub fn experienced_author(database: &Database, _log: &Log, output: &Path) -> Res
         .sort_by(Count(project::Commits))
         .sample(Distinct(Top(50), MinRatio(project::Commits, 0.9)))
         .ungroup()
+        .map_into(project::Id)
         .into_csv_in_dir(output, "experienced_author.csv")       
 }
 
@@ -60,17 +64,8 @@ pub fn experienced_authors_ratio(database: &Database, _log: &Log, output: &Path)
         //.sample(Distinct(Random(50, Seed(42)), MinRatio(project::Commits, 0.9)))
         .sample(Distinct(Top(50), MinRatio(project::Commits, 0.9)))
         .ungroup()
+        .map_into(project::Id)
         .into_csv_in_dir(output, "experienced_authors_ratio.csv")       
-}
-
-#[djanco(April, 2021, subset(Generic))]
-pub fn mean_commit_message_sizes(database: &Database, _log: &Log, output: &Path) -> Result<(), std::io::Error>  {
-    database.projects()
-        .group_by(project::Language)
-        .sort_by(Mean(FromEach(project::Commits, commit::MessageLength)))
-        .sample(Distinct(Top(50), MinRatio(project::Commits, 0.9)))
-        .ungroup()
-        .into_csv_in_dir(output, "mean_commit_message_sizes.csv")       
 }
 
 #[djanco(April, 2021, subset(Generic))]
@@ -80,6 +75,7 @@ pub fn median_commit_message_sizes(database: &Database, _log: &Log, output: &Pat
         .sort_by(Median(FromEach(project::Commits, commit::MessageLength)))
         .sample(Distinct(Top(50), MinRatio(project::Commits, 0.9)))
         .ungroup()
+        .map_into(project::Id)
         .into_csv_in_dir(output, "median_commit_message_sizes.csv")       
 }
 
@@ -90,6 +86,18 @@ pub fn commits(database: &Database, _log: &Log, output: &Path) -> Result<(), std
         .sort_by(Count(project::Commits))
         .sample(Distinct(Top(50), MinRatio(project::Commits, 0.9)))
         .ungroup()
+        .map_into(project::Id)
+        .into_csv_in_dir(output, "commits.csv")       
+}
+
+#[djanco(April, 2021, subset(Generic))]
+pub fn issues(database: &Database, _log: &Log, output: &Path) -> Result<(), std::io::Error>  {
+    database.projects()
+        .group_by(project::Language)
+        .sort_by(Count(project::Commits))
+        .sample(Distinct(Top(50), MinRatio(project::Commits, 0.9)))
+        .ungroup()
+        .map_into(project::Id)
         .into_csv_in_dir(output, "commits.csv")       
 }
 

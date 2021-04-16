@@ -2,7 +2,7 @@
 
 A crate containing ![Djanco](https://github.com/PRL-PRG/djanco) queries.
 
-This crate... *TODO*
+This crate executes the queries for the case study in the paper CodeDJ: Reproducible Queries over Large-Scale Software Repositories.
 
 ## Djanco
 

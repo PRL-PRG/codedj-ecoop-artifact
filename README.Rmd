@@ -97,6 +97,7 @@ downloaded. Be aware that datasets tend to be large.
 
 ```{bash}
 mkdir -p toy-dataset/
+mkdir -p toy-dataset/repo_clones
 ```
 
 Next, specify the list of repositories to include in the dataset in a CSV file.
@@ -299,6 +300,7 @@ fa56454....
 Create a directory for the dataset:
 ```bash
 mkdir -p dataset/
+mkdir -p dataset/repo_clones
 ```
 
 Then, add the repositories to the dataset:
@@ -370,18 +372,52 @@ TODO
 ### Run analysis and generate graphs
 
 This section processes the results from the previous sections and generates
-figures. The analysis is performed in R and Python.
+figures. Additional data is attached to the project list from the dataset. 
+Then, data is processd and analyzed using R. The final part of the analysis and
+graph generation is done in Python. 
 
-#### Preparation
+All the code snipepts are embedded in this Rmd file and are one-click
+executable from RStudio.
+
+#### Preprocessing
+
+Convert the results of the queries into a format that can be used for further analysis. First, attach additional data to match the original FSE paper.
+
+```{bash}
+parasite/target/release/ecoop-artifact --datastore dataset export query-results/stars.list                       query-results/stars.csv
+parasite/target/release/ecoop-artifact --datastore dataset export query-results/commits.list                     query-results/commits.csv
+parasite/target/release/ecoop-artifact --datastore dataset export query-results/experienced_author.list          query-results/experienced_author.csv
+parasite/target/release/ecoop-artifact --datastore dataset export query-results/experienced_authors_ratio.list   query-results/experienced_authors_ratio.csv
+parasite/target/release/ecoop-artifact --datastore dataset export query-results/mean_changes_in_commits.list     query-results/mean_changes_in_commits.csv
+parasite/target/release/ecoop-artifact --datastore dataset export query-results/median_commit_message_sizes.list query-results/median_commit_message_sizes.csv
+parasite/target/release/ecoop-artifact --datastore dataset export query-results/all_issues.list                  query-results/all_issues.csv
+parasite/target/release/ecoop-artifact --datastore dataset export --all                                          query-results/full_dataset.csv
+```
+
+Then, prepare another set of results containing summaries of key characteristics.
+
+```{bash}
+parasite/target/release/ecoop-artifact --datastore dataset compact query-results/stars.csv                       query-results/stars_p.csv                       query-results/stars_pl.csv      
+parasite/target/release/ecoop-artifact --datastore dataset compact query-results/commits.csv                     query-results/commits_p.csv                     query-results/commits_pl.csv 
+parasite/target/release/ecoop-artifact --datastore dataset compact query-results/experienced_authors.csv         query-results/experienced_authors_p.csv         query-results/experienced_authors_pl.csv
+parasite/target/release/ecoop-artifact --datastore dataset compact query-results/experienced_authors_ratio.csv   query-results/experienced_authors_ratio_p.csv   query-results/experienced_authors_ratio_pl.csv
+parasite/target/release/ecoop-artifact --datastore dataset compact query-results/mean_changes_in_commits.csv     query-results/mean_changes_in_commits_p.csv       query-results/mean_changes_in_commits_pl.csv
+parasite/target/release/ecoop-artifact --datastore dataset compact query-results/median_commit_message_sizes.csv query-results/median_commit_message_sizes_p.csv query-results/median_commit_message_sizes_pl.csv
+parasite/target/release/ecoop-artifact --datastore dataset compact query-results/all_issues.csv                  query-results/all_issues_p.csv                  query-results/all_issues_pl.csv 
+parasite/target/release/ecoop-artifact --datastore dataset compact query-results/full_dataset.csv                query-results/full_dataset_p.csv                query-results/full_dataset_pl.csv
+```
+
+#### Preparation 
+
 Load auxiliary functions and initialize log:
 
 ```{R, include=FALSE}
-knitr::knit_engines$set(python = reticulate::eng_python)  
+knitr::knit_engines$set(python = reticulate::eng_python)
 source("scripts/implementation.R")
 initializeLog()
 ```
 
-First load the results of the queries:
+Load the results of the queries:
 
 ```{r, include=FALSE}
 INPUT_DIR <- "query-results/" # output of queries, input of this script
@@ -392,12 +428,13 @@ dir.create(MODEL_DIR)
 dir.create(GRAPHS_DIR)
 
 STARS <- paste0(INPUT_DIR, "stars.csv")
-MEAN_CHANGES_IN_COMMITS <- paste0(INPUT_DIR, "mean_changes_in_commits.csv")
 EXPERIENCED_AUTHORS <- paste0(INPUT_DIR, "experienced_authors.csv")
 EXPERIENCED_AUTHORS_RATIO <- paste0(INPUT_DIR, "experienced_authors_ratio.csv")
+MEAN_CHANGES_IN_COMMITS <- paste0(INPUT_DIR, "mean_changes_in_commits.csv")
 MEDIAN_COMMIT_MESSAGE_SIZES <- paste0(INPUT_DIR, "median_commit_message_sizes.csv")
 COMMITS <- paste0(INPUT_DIR, "commits.csv")
 ALL_ISSUES <- paste0(INPUT_DIR, "all_issues.csv")
+FULL_DATASET <- paste0(INPUT_DIR, "full-dataset.csv")
 
 datasets_raw <- list(
   stars = load_dataset(STARS),
@@ -461,7 +498,14 @@ coefficients (higher means more bugs); the queries returned 50 projects in
 each of the 17 target languages: Coefficients that are not statistically 
 significant are shown in faded colors. If the input set did not matter for the
 model, one could expect the different queries to give roughly the same 
-coefficients with the same significance.
+coefficients with the same significance. This is not the case. If we focus on how many languages have
+statistically significant coefficients: The touched files query is highly predictive, 14 of the
+languages are significant, but the coefficients are frequently opposite from those of other
+queries. Specifically, C is associated with slightly fewer bugs, so are C#, CoffeeScript, Java,
+JavaScript, Objective-C, Perl, PHP, Python, Ruby and TypeScript. On the other hand C++,
+Erlang, Go and Haskell are associated with more defects. This is striking as it goes against
+expectations. The stars query is the least informative. It only gives 7 statistically significant
+coefficients with remarkably low values.
 
 ```{r, include=FALSE}
 summarizeByLanguage = function(what) {
@@ -567,7 +611,8 @@ output_model = function(model, name) {
 models <- Map(calculateModel, datasets, names(datasets))
 Map(output_model, models, names(models))
 ```
-Use the models to create a graph:
+
+Use these models to create a graph:
 
 ```{r, include=FALSE}
 # Install any uninstalled Python packages for reticulate
@@ -685,30 +730,182 @@ for i in range(8):
 
 offset = 0.0632
 
+plt.tight_layout()
 plt.savefig(f"{r.GRAPHS_DIR}/fig6_domain_knowledge.pdf") # Domain knowledge
 plt.show()
 ```
 
 The plot is created in `graphs/fig6_domain_knowledge.pdf`.
 
-#### Project selection summary
+### Project Size and Age Distributions
 
-```r
-summarize_dataset = function (dataset, name) {
-  dataset %>% group_by(language) %>% dplyr::summarize(
-    commits_all = n(),
-    commits_distinct = n_distinct(sha),
-    projects = n_distinct(project),
-    mean_files = mean(files),
-    median_files = median(files),
-    bugs = sum(isbug)
-  ) %>% mutate(selection = name)
-}
+To help, the paper provides distributions of
+various measures in the data. This figure visualizes the distribution of project sizes (left) and
+project age (right) for the entire dataset and for the all the queries queries.
 
-sums = Reduce(rbind, Map(summarize_dataset, datasets, names(datasets)))
+Looking at these distributions makes it clear that the projects returned by various queries
+are quite different in character. The experienced author and the number of commits are
+remarkably similar and return projects that meet our expectations. The issues distribution
+is similar, which should raise red flags given that it frequently disagrees. The stars query
+returns many smaller projects. Finally, message sizes and touched files show distributions
+opposite to those expected. They favor degenerate young projects with few commits that are
+either verbose, or disproportionately large (touching over 100k files). This is reflected also in
+the input sizes, ranging from 8M rows for the experienced author query to mere 79K rows of
+the touched files query. It is likely that these queries are “wrong” in the sense they do not
+return the population of interest. The Figure also suggest that stars is not a good choice.
+
+```{python fig.width=14, fig.height:9}
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from matplotlib.colors import LogNorm
+from os import listdir
+from os.path import isfile, join
+
+stuff = [f for f in listdir(r.INPUT_DIR) if isfile(join(r.INPUT_DIR, f))]
+
+df_names = ['full_dataset_p.csv',
+            'stars_p.csv',
+            'experienced_authors_ratio_p.csv',
+            'experienced_authors_p.csv',
+            'commits_p.csv',
+            'median_commit_message_sizes_p.csv',
+            'all_issues_p.csv',
+            'mean_changes_in_commits_p.csv',
+          ]
+
+frames = []
+
+for i,f in enumerate(df_names):
+    temp = pd.read_csv(r.INPUT_DIR + f)
+    temp['name'] = [names[i]] * len(temp.index)
+    frames.append(temp)
+
+names = ['Full dataset',
+         'Stars',
+         '50% Experienced',     
+         'Experienced Author',
+         'Number of Commits',
+         'Message Size',      
+         'Issues',
+         'Touched Files'
+        ]
+
+frames = []
+
+for i,f in enumerate(df_names):
+    temp = pd.read_csv(r.INPUT_DIR + f)
+    temp['name'] = [names[i]] * len(temp.index)
+    frames.append(temp)
+
+df_full = pd.concat(frames, ignore_index=True, sort=False)
+df_full['plotValue'] = np.log10(df_full.commits)
+df_full['name_value'] = ['Commits']*len(df_full.index)
+
+df_full_age = pd.concat(frames, ignore_index=True, sort=False)
+df_full_age['plotValue'] = np.log10(df_full.age/3600/24+1)
+df_full_age['name_value'] = ['Age [days]']*len(df_full.index)
+
+df_full = pd.concat([df_full, df_full_age], ignore_index=True, sort=False)
+
+sns.set(style='white', rc={'figure.figsize':(14,8)}) #24,8 for big one
+plt.rcParams.update({'font.size': 42})
+
+MICRO_SIZE = 16
+SMALL_SIZE = 20
+MEDIUM_SIZE = 26
+BIGGER_SIZE = 32
+
+plt.rc('font', size=SMALL_SIZE)          # controls default text sizes
+plt.rc('axes', titlesize=SMALL_SIZE)     # fontsize of the axes title
+plt.rc('axes', labelsize=MEDIUM_SIZE)    # fontsize of the x and y labels
+plt.rc('xtick', labelsize=SMALL_SIZE)    # fontsize of the tick labels
+plt.rc('ytick', labelsize=SMALL_SIZE)    # fontsize of the tick labels
+plt.rc('legend', fontsize=MICRO_SIZE)    # legend fontsize
+plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
+
+flatui = ["#82E0AA", "#FF5733", "#2ecc71", "#e74c3c", "#9b59b6", "#3498db", "#95a5a6", "#34495e"]
+sns.set_palette(flatui)
+
+fig, ax = plt.subplots()
+
+ax2 = ax.twinx()
+
+sns.violinplot(x='name',
+               y='plotValue',
+               data=df_full,
+               width=0.9,
+               hue='name_value',
+               split=True,
+               cut = 0,
+               #palette='Greens',
+               ax=ax
+              )
+
+ax.set(ylabel = "$\mathregular{log_{10}}$ (Commits)", xlabel = None)
+ax2.set(ylabel = "$\mathregular{log_{10}}$ (Age [days])", xlabel = None)
+ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
+
+ax.legend(frameon=True, loc = "upper right") 
+
+ax.set_ylim([-0.1, 5.3])
+ax2.set_ylim([-0.1, 5.3])
+
+plt.tight_layout()
+plt.savefig(f"{r.GRAPHS_DIR}/fig7_project_size_and_age_distribution.pdf")
+plt.show()
 ```
 
-```r
+
+
+
+
+
+
+
+
+
+
+
+
+
+#### Project selection summary
+
+```{r, include=FALSE}
+SUMMARY_PROJECTS_STARS <- paste0(INPUT_DIR, "stars_p.csv")
+SUMMARY_PROJECTS_MEAN_CHANGES_IN_COMMITS <- paste0(INPUT_DIR, "mean_changes_in_commits_p.csv")
+SUMMARY_PROJECTS_EXPERIENCED_AUTHORS <- paste0(INPUT_DIR, "experienced_authors_p.csv")
+SUMMARY_PROJECTS_EXPERIENCED_AUTHORS_RATIO <- paste0(INPUT_DIR, "experienced_authors_ratio_p.csv")
+SUMMARY_PROJECTS_MEAN_CHANGES_IN_COMMITS <- paste0(INPUT_DIR, "mean_changes_in_commits_p.csv")
+SUMMARY_PROJECTS_MEDIAN_COMMIT_MESSAGE_SIZES <- paste0(INPUT_DIR, "median_commit_message_sizes_p.csv")
+SUMMARY_PROJECTS_COMMITS <- paste0(INPUT_DIR, "commits_p.csv")
+SUMMARY_PROJECTS_ALL_ISSUES <- paste0(INPUT_DIR, "all_issues_p.csv")
+SUMMARY_PROJECTS_FULL_DATASET <- paste0(INPUT_DIR, "full_dataset_p.csv")
+
+SUMMARY_LANGUAGES_STARS <- paste0(INPUT_DIR, "stars_pl.csv")
+SUMMARY_LANGUAGES_MEAN_CHANGES_IN_COMMITS <- paste0(INPUT_DIR, "mean_changes_in_commits_pl.csv")
+SUMMARY_LANGUAGES_EXPERIENCED_AUTHORS <- paste0(INPUT_DIR, "experienced_authors_pl.csv")
+SUMMARY_LANGUAGES_EXPERIENCED_AUTHORS_RATIO <- paste0(INPUT_DIR, "experienced_authors_ratio_pl.csv")
+SUMMARY_LANGUAGES_MEAN_CHANGES_IN_COMMITS <- paste0(INPUT_DIR, "mean_changes_in_commits_pl.csv")
+SUMMARY_LANGUAGES_MEDIAN_COMMIT_MESSAGE_SIZES <- paste0(INPUT_DIR, "median_commit_message_sizes_pl.csv")
+SUMMARY_LANGUAGES_COMMITS <- paste0(INPUT_DIR, "commits_pl.csv")
+SUMMARY_LANGUAGES_ALL_ISSUES <- paste0(INPUT_DIR, "all_issues_pl.csv")
+SUMMARY_LANGUAGES_FULL_DATASET <- paste0(INPUT_DIR, "full_dataset_pl.csv")
+
+summarize_dataset = function (dataset, name) {
+  dataset %>% 
+    group_by(language) %>% 
+    dplyr::summarize(
+        commits_all = n(),
+        commits_distinct = n_distinct(sha),
+        projects = n_distinct(project),
+        mean_files = mean(files),
+        median_files = median(files),
+        bugs = sum(isbug)) %>%
+    mutate(selection = name)
+}
+
 load_summary = function(path) {
   result = read_delim(path, delim=',', escape_double=FALSE, escape_backslash=TRUE, quote="\"")
   result$language = as.factor(tolower(result$language))
@@ -716,30 +913,38 @@ load_summary = function(path) {
   result$pctCommits = result$pctCommits / 100
   invisible(result)
 }
+
 load_projects_summary = function(path) {
   result = read_delim(path, delim=',', escape_double=FALSE, escape_backslash=TRUE, quote="\"")
   invisible(result)
 }
+```
+
+```{r, include=FALSE}
+sums = Reduce(rbind, Map(summarize_dataset, datasets, names(datasets)))
 
 summary_p = list(
-  stars = load_projects_summary("/data/artifact-inputs/summary-stars-p.csv"),
-  changes = load_projects_summary("/data/artifact-inputs/summary-changes-p.csv"),
-  expa = load_projects_summary("/data/artifact-inputs/summary-expa-p.csv"),
-  expr = load_projects_summary("/data/artifact-inputs/summary-expr-p.csv"),
-  messages = load_projects_summary("/data/artifact-inputs/summary-messages-p.csv"),
-  commits = load_projects_summary("/data/artifact-inputs/summary-commits-p.csv"),
-  issues = load_projects_summary("/data/artifact-inputs/summary-issues-p.csv"),
-  full = load_projects_summary("/data/artifact-inputs/summary-full-p.csv")
+  stars = load_projects_summary(SUMMARY_PROJECTS_STARS),
+  changes = load_projects_summary(SUMMARY_PROJECTS_MEAN_CHANGES_IN_COMMITS),
+  expa = load_projects_summary(SUMMARY_PROJECTS_EXPERIENCED_AUTHORS),
+  expr = load_projects_summary(SUMMARY_PROJECTS_EXPERIENCED_AUTHORS_RATIO),
+  messages = load_projects_summary(SUMMARY_PROJECTS_MEDIAN_COMMIT_MESSAGE_SIZES),
+  commits = load_projects_summary(SUMMARY_PROJECTS_COMMITS),
+  issues = load_projects_summary(SUMMARY_PROJECTS_ALL_ISSUES),
+  full = load_projects_summary(SUMMARY_PROJECTS_FULL_DATASET)
 )
+
+summary_p
+
 big_table_p = Reduce(rbind, Map(function(dataset, name) { dataset %>% mutate(name = name) }, summary_p, names(summary_p)))
 big_table_p$name = factor(big_table_p$name, c("full","changes","commits","expa","expr","issues","messages","stars"))
 # just to check number of lines
 nrow(summary_p$full)
 ```
 
-Remove minor languages
+Remove minor languages:
 
-```{r}
+```r
 remove_minor_languages = function(dataset, dataset_name) {
   before = nrow(dataset)
   dataset$language = tolower(as.character(dataset$language))
@@ -748,17 +953,20 @@ remove_minor_languages = function(dataset, dataset_name) {
   LOG(paste0("major",dataset_name,"before"), before)
   LOGPctAndRaw(paste0("major",dataset_name,"after"), after, before)
   result$language = as.factor(result$language)
-  result  
-  
+  result
 }
-major_languages = read_delim("/data/with_results/dataset-descriptions/dataset-projects.csv", delim=',', escape_double=FALSE, escape_backslash=TRUE, quote="\"") %>% dplyr::select(project = id, language) %>% dplyr::mutate(language=tolower(as.character(language)))
+major_languages = read_delim("/data/with_results/dataset-descriptions/dataset-projects.csv", 
+                             delim=',', escape_double=FALSE, escape_backslash=TRUE, quote="\"") %>% 
+  dplyr::select(project = id, language) %>% 
+  dplyr::mutate(language=tolower(as.character(language)))
 major_datasets = Map(remove_minor_languages, datasets, names(datasets))
 ```
 
-Calculate models for major languages
+Calculate coefficients for major languages:
 
 ```{r}
 major_models = Map(calculateModel, major_datasets, names(major_datasets))
-Map(function(model, name) write.csv(model %>% dplyr::select(coef, pVal), paste0(MODEL_DIR, name, ".csv")), 
+Map(function(model, name) write.csv(model %>% dplyr::select(coef, pVal), paste0(MODEL_DIR, name, "_major.csv")), 
     major_models, names(major_models))
 ```
+
