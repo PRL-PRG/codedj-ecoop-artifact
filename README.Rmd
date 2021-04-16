@@ -633,7 +633,7 @@ from matplotlib.colors import LogNorm
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.patches as mpatches
 
-sns.set(style='white', rc={'figure.figsize':(24,8)})
+sns.set(style='white', rc={'figure.figsize':(14,8)})
 plt.rcParams.update({'font.size': 42})
 
 MICRO_SIZE = 16
@@ -656,7 +656,7 @@ files = [f for f in listdir(r.MODEL_DIR) if isfile(join(r.MODEL_DIR, f))]
 print(files)
 
 #names
-ns = ['Stars',
+names = ['Stars',
       'Touched Files',
       '50% Experienced',
       'Experienced Author',
@@ -668,6 +668,8 @@ frames = []
 
 for f in files:
     temp = pd.read_csv(r.MODEL_DIR + f)[5:]
+    print("temp")
+    print(temp)
     frames.append(temp)
 
 df_smart = pd.concat(frames, ignore_index=True, sort=False)
@@ -720,12 +722,15 @@ sns.barplot(x='Language:',
 plt.xlabel(None)
 plt.ylabel('Coefficient')
 ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
-plt.xlim((-0.42, 15.43))
+plt.xlim((-0.42, 16.43))
+
+print(handles)
+print(labels)
 
 handles, labels = ax.get_legend_handles_labels()
-ax.legend(handles[0:7], labels[0:7], frameon=False, loc = "best") 
+ax.legend(handles[0:7], names[0:7], frameon=False, loc = "best") 
 
-for i in range(8):
+for i in range(9):
     ax.axvspan(-0.4 + 2*i, 0.60 + 2*i, facecolor='gray', alpha=0.1)
 
 offset = 0.0632
