@@ -56,16 +56,23 @@ to be on display in this artifact:
 
 The artifact consists of the following parts:
 
+- **Prerequisites**---a description of the packages and tools that need to be
+  installed (all of these are installed in the VM the artifact comes with);
 - **Part 1. Getting started**---a walkthrough through the setting up the 
   system from scratch, downloading a dataset, and executing queries;
 - **Part 2. Case study: of bugs and languages**---a re-creation of the 
   experiment from the paper: downloading a dataset, running project selection 
   queries from the paper, performing data analysis and making the graphs from 
-  the paper.
+  the paper;
 - **Part 3. Caching performance**---an experiment showing caching 
-  performance of Djanco: downloading the dataset and running the experiment.
+  performance of Djanco: downloading the dataset and running the experiment;
 
 Each part is described in one or more separate Rmd documents.
+
+- **Prerequisites** [](0-prerequisites.Rmd)
+- **Part 1. Getting started** [](1-getting-started.Rmd)
+- **Part 2. Case-study: of bugs and languages** [](2-case-study.Rmd)
+- **Part 3. Caching performance** [](3-caching-performance.Rmd)
 
 We provide the results of all stages, so the reader can skip sections. In
 fact there are some sections that we recommend skipping since they would
@@ -88,4 +95,8 @@ the necessary datasets required to run the examples in the artifact.
 
 ## Directory structure
 
-TODO
+## Not in the repository
+
+the artifact is deposited at github.com/PRL-PRG/codedj-ecoop-artifact. Due to the limitations 
+of the medium, the repository does not include most of the data. This is a list of files that 
+need to be generated or added manually.

@@ -1,22 +1,72 @@
-# Part 1: Getting started
-
-This part describes setting up the CodeDJ system from scratch, downloading a 
-dataset, and running a query.
+~~~
+NOTE
 
 This is an R markdown document. It's like a markdown document, but has 
 executable snippets of code that do the work (in various languages, including
-bash, Python, R). It can be viewed using `rstudio`---we recommend doing this.
-It can also be executed (in whole) with R using the following script:
+bash, Python, R). It can be viewed using Rstudio---we recommend doing this.
+
+    rstudio 1-getting-started.Rmd
+
+It can also be executed (in whole) with R using the following bash snippet:*
+ 
+    Rscript -e "rmarkdown::render('1-getting-started.Rmd')"
+
+This will compile the document into HTML while executing all the code 
+snippets in the document.
+~~~
+
+
+# Part 1: Getting started
+
+This part describes setting up the CodeDJ system from scratch, downloading a 
+dataset, and running a query. It is a tutorial for someone who is trying out getting their own dataset, and 
+writing their own queries. This part consists of the following sections:
+
+TODO
+
+These two components are modular: writing queries does not require downloading
+a dataset---one is provided with the artifact (details ion the downloading 
+section). 
+
+The downloading section requires, well, downloading. If the reather wishes to avoid this,
+they can skip that step and use the pre-geneerated dataset provided with the artifact
+
+### Setup
+
+(You can run all the code in this section by executing `scripts/setup.sh`.)
+
+Djanco and Parasite are already isntalled in the artifact image. You can download and build them Parasite using the following two commands:
 
 ```bash
-Rscript -e "rmarkdown::render('myfile.Rmd myarg')"
+rm -rf parasite
+git clone https://github.com/PRL-PRG/codedj-parasite.git parasite
+cd parasite
+cargo build --release
+cd ..
 ```
 
-Prerequisites:
+```bash
+git clone https://github.com/PRL-PRG/djanco.git 
+cd djanco 
+cargo build --release
+cd ..
+```
 
-- [git](https://git-scm.com/), 
-- [Rust and cargo](https://www.rust-lang.org/tools/install), 
-- TODO libs.
+### Skipping downloading
+
+We also provide a pre-downloaded dataset in `datasets/toy-dataset` so this step
+can be skipped. To skip downloading, move the existing dataset to the path expected by the rest of the tools:
+
+```bash
+mv dataset/predownloaded-to-dataset datasets/toy-dataset
+```
+
+This provides a small 10-project dataset using Parasite that is the same 
+as if the reader downloaded it following the steps in the next section.
+
+### Downloading a toy dataset
+
+We explain how to download a small 10-project dataset using Parasite. 
 
 In order to download projects from GitHub Parasite requires the user have a 
 GitHub account and a personal access token. You can generate a token for your 
@@ -24,44 +74,12 @@ GitHub account by following the instructions
 [here](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token). 
 The token does not need any scopes or permissions.
 
-### Setup
-
-(You can run all the code in this section by executing `scripts/setup.sh`.)
-
-Downloading and building Parasite (the GitHub dataset downloader):
-
-```{bash}
-git clone https://github.com/PRL-PRG/codedj-parasite.git parasite
-cd parasite
-cargo build --release
-cd ..
-```
-
-Downloading and building Djanco (the query engine):
-
-```{bash}
-git clone https://github.com/PRL-PRG/djanco.git 
-cd djanco 
-cargo build --release
-cd ..
-```
-
-### Downloading a toy dataset
-
-(You can run all the code in this section by executing `scripts/download.sh`. 
-You will have to exit parasite interactive mode manually after the download 
-finishes.)
-
-We explain how to download a small 10-project dataset using Parasite. We also 
-provide a pre-downloaded repository in `pregenerated/toy-dataset` so this step
-can be skipped.
-
 To create a basic dataset, first create a directory that will contain the 
 downloaded. Be aware that datasets tend to be large. 
 
 ```{bash}
-mkdir -p toy-dataset/
-mkdir -p toy-dataset/repo_clones
+mkdir -p datasets/toy-dataset/
+mkdir -p datasets/toy-dataset/repo_clones
 ```
 
 Next, specify the list of repositories to include in the dataset in a CSV file.
@@ -82,12 +100,12 @@ https://github.com/3b1b/manim.git
 https://github.com/s0md3v/photon.git
 ```
 
-This file is located at `toy-dataset-repositories.csv`.
+This file is located at `datasets/toy-dataset-repositories.csv`.
 
 Then, feed the list of repositories to Parasite:
 
 ```{bash}
-parasite/target/release/parasite --datastore toy-dataset add toy-dataset-repositories.csv
+parasite/target/release/parasite --datastore datasets/toy-dataset add datasets/toy-dataset-repositories.csv
 ```
 
 Next, create a CSV file containing one of more 
@@ -109,13 +127,19 @@ The next step is to enter interactive console in Parasite. Provide a path to
 the GitHub token file via the ght flag. You can also specify the number of
 threads that the downloader will use with the n flag (here we use 8).
 
+```bash
+parasite/target/release/parasite --datastore datasets/toy-dataset -ght ghtokens.csv -n 8 --interactive
+```
+
+(This executes the command in a new terminal, so it's possible to run in from inside RStudio)
+
 ```{bash}
-parasite/target/release/parasite --datastore toy-dataset -ght ghtokens.csv -n 8 --interactive
+gnome-terminal -e "parasite/target/release/parasite --datastore datasets/toy-dataset -ght ghtokens.csv -n 8 --interactive"
 ```
 
 ![](img/interactive.png)
 
-In interactive console: execute the loadall command to load substore
+In interactive console: execute the `loadall` command to load `substore`
 information into memory.
 
 ```
@@ -143,7 +167,7 @@ the queries in the crate. This is the easiest way to use Djanco. Alternatively,
 one can create a cargo crate from scratch. We only present the former here.
 
 A pre-generated instance of the crate generated by this process is included in
-`pregenerated/my-query-crate`.
+`queries/my-query-crate`.
 
 First, install the `generate` command for the `cargo` system.
 

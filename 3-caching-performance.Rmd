@@ -1,3 +1,22 @@
+~~~
+NOTE
+
+This is an R markdown document. It's like a markdown document, but has 
+executable snippets of code that do the work (in various languages, including
+bash, Python, R). It can be viewed using Rstudio---we recommend doing this.
+
+    rstudio 3-caching-performance.Rmd
+
+It can also be executed (in whole) with R using the following bash snippet:*
+ 
+    Rscript -e "rmarkdown::render('3-caching-performance.Rmd')"
+
+This will compile the document into HTML while executing all the code 
+snippets in the document.
+
+This is the root document of the artifact. Start reading here.
+~~~
+
 # Part 3. Caching performance
 
 We have benchamrked and pre-tuned Djanco to cache only when it is clearly
