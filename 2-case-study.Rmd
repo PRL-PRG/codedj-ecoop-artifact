@@ -79,23 +79,27 @@ dataset from our servers or to construct one from scratch.
 ### A note on development history of Parasite and Djanco
 
 The system used for the study in the paper has undergone development since the paper was submitted. 
-We converted the original dataset to the new downloader format rather than re-downloading it.
-The current dataset collects different data and from different sources. The original dataset was supplemented with data
-from GHTorrent: star counts and issue information. We found this data to be very rough (big different from values seen 
-on GitHub, not present for all projects), so our current version of the downloader ditches GHTorrent in favor of 
-downloading project metadata using the GitHub API and provides different metadata for projects. The current version has
-new attributes that the old version did not have. On the other hand, the current version does not retrieve issues counts
-because they are very uneconomical to obtain via the GitHub API. 
+We converted the original dataset to the new format rather than re-downloading it.
+The current dataset (described in the paper) collects slightly different data from different sources: 
 
-This has a few implications for the artifact. The converted dataset has many empty project attributes that the original 
-dataset did not collect: IsFork, IsArchived, IsDisabled,
-Watchers, Open_issues, Forks, Subscribers, HasIssues, HasDownloads, HasWiki, HasPages, DefaultBranch, License, Homepage, Description. 
-If the reader writes their own queries using these attributes and the provided dataset, these will be empty. 
-If the dataset were to be redownloaded, it will not contain Issues, BuggyIssues, or AllIssues project attributes (but it will 
-contain all the other properties listed above).
+The *original* dataset was seeded with data from GHTorrent: commits, star counts and issue information. We found this 
+data to be very rough (big different from values seen on GitHub, not present for all projects), so our current version 
+of the downloader ditches GHTorrent in favor of downloading project metadata using the GitHub API and provides different 
+metadata for projects.
+
+The *current* version has new attributes that the old version did not have. On the other hand, the current version does 
+not retrieve issues counts because they are very uneconomical to obtain via the GitHub API.
+
+This has a few implications for the artifact: The converted dataset has many empty project attributes that the original
+dataset did not collect: `IsFork`, `IsArchived`, `IsDisabled`, `Watchers`, `Open_issues`, `Forks`, `Subscribers`,
+`HasIssues`, `HasDownloads`, `HasWiki`, `HasPages`, `DefaultBranch`, `License`, `Homepage`, and `Description`.
+If the reader writes their own queries using these attributes and  the provided dataset, these will be empty. 
+If the dataset were to be updated, or redownloaded from scratch, it will contain 
+these, but not `Issues`, `BuggyIssues` and `AllIssues`,
+which we have retained during the conversion. 
 
 The current dataset stores entities more efficiently in terms of disk space: it takes up 36GB on disk,
-rather than 51GB as mentioned in the paper.
+rather than 51GB as mentioned in the original versionof the paper. This will be fixed in the camera ready version.
 
 ## Perform project selection for the queries in the paper
 

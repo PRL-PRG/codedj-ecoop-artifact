@@ -213,7 +213,13 @@ to the median of the distribution could give a representative answer. As we can 
 paper often picks subsets that are outliers; see the cases of CoffeeScript, Go, Perl, Scala and
 most strikingly TypeScript.
 
+Please note that the number of samples used for generating the graph should not be larger than 
+the number of samples generated during post-processing the dataset (10000 by default). Also note 
+that the more samples are used, the slower the processing becomes.
+
 ```{python, fig.width=14, fig.height=8}
+SAMPLES = 10000
+
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -242,7 +248,7 @@ ref_FSE = [0.15, 0.23, 0.03, -0.29, -0.07, 0, -0.08, -0.23, -0.01, 0.06, 0.18, -
 
 frames = []
 
-for i in range(1, 10001):
+for i in range(1, SAMPLES + 1):
     temp = pd.read_csv(f'{r.MODEL_DIR}/ts_by_year/2020/{str(i)}2020_new.csv')
     frames.append(temp[5:])
 
@@ -295,7 +301,13 @@ were misidentified as TypeScript; these files did not have bugs, biasing the res
 popularity of TypeScript quickly caused real code to crowd out the translation files, and the
 association with bugs settled to around 0.2.
 
+Please note that the number of samples used for generating the graph should not be larger than 
+the number of samples generated during post-processing the dataset (10000 by default). Also note 
+that the more samples are used, the slower the processing becomes.
+
 ```{python, fig.width=14, fig.height=8}
+SAMPLES = 1000
+
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -326,7 +338,7 @@ for year in years:
     frames = []
     print(year)
     temp_concat = []
-    for i in range(1, 1001):
+    for i in range(1, SAMPLES + 1):
         #file =   f'{r.MODEL_DIR}/by_year/{str(year)}/{str(i)}{str(year)}_new.csv'
         file = f'{r.MODEL_DIR}/ts_by_year/{str(year)}/{str(i)}{str(year)}_new.csv'
         print(file)
