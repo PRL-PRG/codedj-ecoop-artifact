@@ -47,7 +47,7 @@ the choice of projects.
 ## Artifact details
 
 The paper presents a system composed of two pieces of software which are going
-to be on display in this artifact:
+on display in this artifact:
 
 - **Parasite**---a GitHub downloader and datastore,
 - **Djanco**---a query engine for Parasite.
@@ -62,21 +62,6 @@ The artifact consists of the following parts:
   experiment from the paper: downloading a dataset, running project selection 
   queries from the paper, performing data analysis and making the graphs from 
   the paper.
-
-We decided not to replicate the caching performance table from the paper, 
-for practical reasons: 
-
-- The difference in caching performance is only noticable in large datasets, 
-  however, torturing the cache using those takes many days;
-- The results are uinlikely to be replicable on other systems, since the 
-  caches require large amounts of disk space and RAM to work with very large 
-  datasets;
-- Djanco comes pre-tuned---we would have to provide a separate version of the 
-   database that caches everything.
-
-These reasons, coupled with the fact that the table is of secondary importance 
-to most readers than the remainder of the experiments, lead us to cut it from 
-the artifact. 
 
 Each part is described in one or more separate Rmd documents.
 
@@ -139,6 +124,23 @@ codedj-ecoop-artifact
 ├── img                                           # Misc. images used in documents.
 └── scripts                                       # Auxiliary scripts used in various analyses.
 ```
+
+## Not in the artifact
+
+We decided not to replicate the caching performance table from the paper, 
+for practical reasons: 
+
+- The difference in caching performance is only noticable in large datasets, 
+  however, torturing the cache using those takes many days;
+- The results are uinlikely to be replicable on other systems, since the 
+  caches require large amounts of disk space and RAM to work with very large 
+  datasets;
+- Djanco comes pre-tuned---we would have to provide a separate version of the 
+   database that caches everything.
+
+These reasons, coupled with the fact that the table is of secondary importance 
+to most readers than the remainder of the experiments, lead us to cut it from 
+the artifact. 
 
 ## Not in the repository
 
