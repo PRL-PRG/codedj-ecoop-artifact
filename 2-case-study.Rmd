@@ -161,7 +161,7 @@ The following experiments are discussed in detail:
 - Domain knowledge (Fig. 6)
 - Domain knowledge (Fig. 7)
 
-The following document provides the details and runnable sscripts re-creating the pipeline:
+The following document provides the details and runnable scripts re-creating the pipeline:
 
 [2.3-case-study-data-analysis-and-graphs.Rmd](2.3-case-study-data-analysis-and-graphs.Rmd)
 
