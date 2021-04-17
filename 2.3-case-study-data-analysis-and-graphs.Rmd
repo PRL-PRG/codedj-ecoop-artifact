@@ -195,6 +195,7 @@ calculateModel = function(dataset, dataset_name) {
     result
 }
 
+models = Map(calculateModel, datasets, names(datasets))
 Map(function(model, name) {write.csv(model %>% dplyr::select(coef, pVal), paste0(MODEL_DIR,"/",name,".csv"))} , models, names(models))
 ```
 
