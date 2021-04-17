@@ -1,0 +1,23 @@
+"","coef","pVal"
+"Intercept",-2.48,0
+"log age",0.1,0
+"log size",-0.04,0.005
+"log devs",0.13,0
+"log commits",1.07,0
+"C",0.12,0.189
+"C#",0.06,0.56
+"C++",0.12,0.189
+"Clojure",-0.22,0.029
+"Coffeescript",0.13,0.184
+"Erlang",-0.05,0.63
+"Go",0.14,0.147
+"Haskell",-0.15,0.134
+"Java",-0.24,0.015
+"Javascript",-0.17,0.108
+"Objective-C",0.04,0.664
+"Perl",0,0.999
+"Php",0.22,0.015
+"Python",0.03,0.781
+"Ruby",-0.14,0.162
+"Scala",-0.09,0.346
+"Typescript",0.19,0.06
