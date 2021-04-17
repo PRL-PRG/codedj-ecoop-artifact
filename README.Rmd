@@ -112,14 +112,14 @@ codedj-ecoop-artifact
 ├── datasets                                      # Contains datasets and list of repositories to create them.
 │   ├── big-dataset-repositories.csv              # List of repositories in the dataset used in the case study.
 │   ├── toy-dataset-repositories.csv              # List of 10 repositories used to create the toy dataset.
-│   └── toy-dataset                               # A toy dataset containig data for 10 repositories used in tutorials.
+│   └── toy-dataset                               # A toy dataset 10 repositories; used in tutorials.
 ├── queries                                       # Source code of crates used to run queries.
 │   ├── my-query-crate                            # Query crate used in the getting started section.
 │   └── paper                                     # Queries used in the paper.
 ├── query-results                                 # Results from executing queries.
 │   ├── fse                                       # Reference results from the FSE2014 paper.
 │   └── paper                                     # Query results from the experiment in the paper.
-├── models                                        # Coefficients and samples generated for data analysis from query-results.
+├── models                                        # Coefficients and samples generated from query-results.
 ├── graphs                                        # Figures generated from data analysis.
 ├── img                                           # Misc. images used in documents.
 └── scripts                                       # Auxiliary scripts used in various analyses.
@@ -127,7 +127,7 @@ codedj-ecoop-artifact
 
 ## Not in the repository
 
-the artifact is deposited at github.com/PRL-PRG/codedj-ecoop-artifact. Due to the limitations 
+This artifact is deposited in a [GitHub repository](https://github.com/PRL-PRG/codedj-ecoop-artifact). Due to the limitations 
 of the medium, the repository does not include most of the data. This is a list of files that 
 need to be generated or added manually.
 
