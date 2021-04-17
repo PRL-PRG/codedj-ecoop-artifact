@@ -95,8 +95,46 @@ the necessary datasets required to run the examples in the artifact.
 
 ## Directory structure
 
+This artifact has the following directory structure:
+
+```
+codedj-ecoop-artifact
+├── README.Rmd                                    # The root document. Start here.
+├── 0-prerequisites.Rmd                           # Instruction for installing dependencies.
+├── 1-getting-started.Rmd                         # Dataset download and query tutorial.
+├── 2-case-study.Rmd                              # Reproduction of case study from the paper.
+├── 2.1-case-study-dataset.Rmd                    # Case study dataset generation/download.
+├── 2.2-case-study-project-selection.Rmd          # Case study project selection queries.
+├── 2.3-case-study-data-analysis-and-graphs.Rmd   # Case study data analysis and graphs.
+├── 3-caching-performance.Rmd                     # Caching performance experiment.
+├── parasite                                      # The Parasite downloader source code.
+├── djanco                                        # The Djanco query engine source code.
+├── datasets                                      # Contains datasets and list of repositories to create them.
+│   ├── big-dataset-repositories.csv              # List of repositories in the dataset used in the case study.
+│   ├── toy-dataset-repositories.csv              # List of 10 repositories used to create the toy dataset.
+│   └── toy-dataset                               # A toy dataset containig data for 10 repositories used in tutorials.
+├── queries                                       # Source code of crates used to run queries.
+│   ├── my-query-crate                            # Query crate used in the getting started section.
+│   └── paper                                     # Queries used in the paper.
+├── query-results                                 # Results from executing queries.
+│   ├── fse                                       # Reference results from the FSE2014 paper.
+│   └── paper                                     # Query results from the experiment in the paper.
+├── models                                        # Coefficients and samples generated for data analysis from query-results.
+├── graphs                                        # Figures generated from data analysis.
+├── img                                           # Misc. images used in documents.
+└── scripts                                       # Auxiliary scripts used in various analyses.
+```
+
 ## Not in the repository
 
 the artifact is deposited at github.com/PRL-PRG/codedj-ecoop-artifact. Due to the limitations 
 of the medium, the repository does not include most of the data. This is a list of files that 
 need to be generated or added manually.
+
+```
+djanco
+parasite
+datasets/toy-dataset
+datasets/dataset
+query-results/paper/*.csv
+```
