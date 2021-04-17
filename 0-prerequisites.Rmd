@@ -1,6 +1,4 @@
 ~~~
-NOTE
-
 This is an R markdown document. It's like a markdown document, but has 
 executable snippets of code that do the work (in various languages, including
 bash, Python, R). It can be viewed using Rstudio---we recommend doing this.
@@ -33,7 +31,7 @@ sudo apt install git
 
 Curl:
 
-```
+```bash
 sudo apt install curl
 ```
 
@@ -47,6 +45,8 @@ sudo apt-get install libssl-dev libgit2-dev cmake pkg-config libicu-dev zlib1g-d
 
 ```bash
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+cargo install cargo-generate
+cargo install --git https://github.com/PRL-PRG/cargo-djanco
 ```
 
 ## Ruby and Ruby packages

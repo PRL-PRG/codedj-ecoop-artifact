@@ -1,6 +1,4 @@
 ~~~
-NOTE
-
 This is an R markdown document. It's like a markdown document, but has 
 executable snippets of code that do the work (in various languages, including
 bash, Python, R). It can be viewed using Rstudio---we recommend doing this.
@@ -63,16 +61,33 @@ The artifact consists of the following parts:
 - **Part 2. Case study: of bugs and languages**---a re-creation of the 
   experiment from the paper: downloading a dataset, running project selection 
   queries from the paper, performing data analysis and making the graphs from 
-  the paper;
-- **Part 3. Caching performance**---an experiment showing caching 
-  performance of Djanco: downloading the dataset and running the experiment;
+  the paper.
+
+We decided not to replicate the caching performance table from the paper, 
+for practical reasons: 
+
+- The difference in caching performance is only noticable in large datasets, 
+  however, torturing the cache using those takes many days;
+- The results are uinlikely to be replicable on other systems, since the 
+  caches require large amounts of disk space and RAM to work with very large 
+  datasets;
+- Djanco comes pre-tuned---we would have to provide a separate version of the 
+   database that caches everything.
+
+These reasons, coupled with the fact that the table is of secondary importance 
+to most readers than the remainder of the experiments, lead us to cut it from 
+the artifact. 
 
 Each part is described in one or more separate Rmd documents.
 
-- **Prerequisites** [](0-prerequisites.Rmd)
-- **Part 1. Getting started** [](1-getting-started.Rmd)
-- **Part 2. Case-study: of bugs and languages** [](2-case-study.Rmd)
-- **Part 3. Caching performance** [](3-caching-performance.Rmd)
+| Part/Section                      |  Rmd file                                                                                  |
+|:--------------------------------- | :----------------------------------------------------------------------------------------- |
+| Prerequisites                     | [0-prerequisites.Rmd](0-prerequisites.Rmd)                                                 |
+| Getting started                   | [1-getting-started.Rmd](1-getting-started.Rmd)                                             |
+| Case-study: of bugs and languages | [2-case-study.Rmd](2-case-study.Rmd)                                                       |
+|                                   | [2.1-case-study-dataset.Rmd](2.1-case-study-dataset.Rmd)                                   |
+|                                   | [2.2-case-study-project-selection.Rmd](2.2-case-study-project-selection.Rmd)               |
+|                                   | [2.3-case-study-data-analysis-and-graphs.Rmd](2.3-case-study-data-analysis-and-graphs.Rmd) |
 
 We provide the results of all stages, so the reader can skip sections. In
 fact there are some sections that we recommend skipping since they would
@@ -112,7 +127,7 @@ codedj-ecoop-artifact
 ├── datasets                                      # Contains datasets and list of repositories to create them.
 │   ├── big-dataset-repositories.csv              # List of repositories in the dataset used in the case study.
 │   ├── toy-dataset-repositories.csv              # List of 10 repositories used to create the toy dataset.
-│   └── toy-dataset                               # A toy dataset 10 repositories; used in tutorials.
+│   └── predownloaded-toy-dataset                 # A toy dataset 10 repositories; used in tutorials.
 ├── queries                                       # Source code of crates used to run queries.
 │   ├── my-query-crate                            # Query crate used in the getting started section.
 │   └── paper                                     # Queries used in the paper.

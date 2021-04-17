@@ -1,6 +1,4 @@
 ~~~
-NOTE
-
 This is an R markdown document. It's like a markdown document, but has 
 executable snippets of code that do the work (in various languages, including
 bash, Python, R). It can be viewed using Rstudio---we recommend doing this.
@@ -24,11 +22,40 @@ claims, and that Code DJ allows rapid exploration of the input space.
 
 This section of the artifact aims to replicate the case study in three parts:
 
+- background,
 - download the dataset,
 - perform project selection for the queries in the paper,
 - perform experiments from the paper.
 
 The stages are described below and details for re-running them are provided in separate Rmd files.
+
+#### Background
+
+The work’s motivation is the claim that the selection of inputs matters in empirical studies
+of software and that Code DJ can assist researchers in that process. We illustrate these points
+with a case study. We start from prior work, and show that input selection impacts scientific
+claims, and that Code DJ allows rapid exploration of the input space.
+
+The starting point is an FSE 2014 paper:
+
+Baishakhi Ray, Daryl Posnett, Vladimir Filkov, and Premkumar Devanbu. *A large scale
+study of programming languages and code quality in GitHub*. In International Symposium on
+Foundations of Software Engineering (FSE), 2014. 
+![doi:10.1145/2635868.2635922](doi:10.1145/2635868.2635922).
+
+One contribution of the work is to establish
+that some programming languages have a greater association with defects than others (RQ1). 
+The methodology followed there can be summarized as follows. For 17 popular
+languages, select 50 projects hosted on GitHub that have at least 28 commits. For each
+commit touching a file that contains code in one of the target languages, label the commit as
+bug-fixing if its message contains a bug-related keyword. Fit a Negative Binomial Regression
+(NBR) against the labeled data and obtain, for each language, a coefficient and a p-value.
+The coefficient indicates the strength of the association (positive means more bugs), and the
+p-value tells us about statistical significance (less than .05 means the coefficient is significant).
+The FSE 2014 paper concluded that TypeScript, Clojure, Haskell, Ruby and Scala were
+associated with fewer bugs, while C, C++, Objective-C, JavaScript, PHP and Python were
+associated with more bugs. The remaining languages did not have statistically significant
+coefficients. 
 
 ## Download the dataset
 
@@ -113,8 +140,6 @@ a csv file containing summary information about each project.
 
 ### Perform experiments from the paper
 
-TODO
-
 This section processes the results from the previous sections and generates
 figures. Additional data is attached to the project list from the dataset. 
 Then, data is processd and analyzed using R. The final part of the analysis and
@@ -123,9 +148,8 @@ graph generation is done in Python.
 All the code snipepts are embedded in this Rmd file and are one-click
 executable from RStudio.
 
-
-    - random input selection,
-    - observing change over time,
-    - introducing domain knowledge,
-    - project size and age distributions.
+- random input selection,
+- observing change over time,
+- introducing domain knowledge,
+- project size and age distributions.
 
