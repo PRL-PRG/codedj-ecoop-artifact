@@ -1,0 +1,438 @@
+~~~
+NOTE
+
+This is an R markdown document. It's like a markdown document, but has 
+executable snippets of code that do the work (in various languages, including
+bash, Python, R). It can be viewed using Rstudio---we recommend doing this.
+
+    rstudio 2.1-case-study-dataset.Rmd
+
+It can also be executed (in whole) with R using the following bash snippet:*
+ 
+    Rscript -e "rmarkdown::render('2.1-case-study-dataset.Rmd')"
+
+This will compile the document into HTML while executing all the code 
+snippets in the document.
+
+This is the root document of the artifact. Start reading here.
+~~~
+
+# Part 2.2. Case study: project selection
+
+There are 7 project selection queries in the paper:
+
+* Stars: Pick projects with most stars. Rationale: starred projects are 
+  popular and thus likely to be well written and maintained. 
+* Touched Files: compute #files changed by commits, pick projects that
+  changed the most files. Rationale: indicative of projects where commits 
+  represent larger units of work.
+* Experienced Author: experienced developers are those on GitHub for at 
+  least two years; pick a sample of projects with at least one experienced 
+  contributor. Rationale: less likely to be throw-away projects.
+* 50% Experienced: projects with two or more developers, half of which 
+  experienced. Rationale: focus on larger teams.
+* Message Size: Compute size in bytes of commit messages; pick projects 
+  with the largest size. Rationale: empty or trivial commit messages 
+  indicate uninteresting projects.
+* Number of Commits: Compute the number of commits; pick projects with the 
+  most commits. Rationale: larger projects are more mature.
+* Issues: Pick projects with the most issues. Rationale: issues indicate 
+  a more structured development process.
+
+## Query semantics  
+
+The queries are written using the Djanco DSL. Here are the relevant snippets for each query:
+
+Stars:
+```rust
+database.projects()
+    .group_by(project::Language)
+    .sort_by(project::Stars)
+    .sample(Distinct(Top(50), MinRatio(project::Commits, 0.9)))
+}
+```
+
+Touched Files:
+```rust
+database.projects()
+    .group_by(project::Language)
+    .sort_by(Mean(FromEach(project::Commits, Count(commit::Paths))))
+    .sample(Distinct(Top(50), MinRatio(project::Commits, 0.9)))
+}
+```
+
+Experienced author:
+```rust
+database.projects()
+    .group_by(project::Language)
+    .filter_by(AtLeast(Count(FromEachIf(project::Users, AtLeast(user::Experience, Duration::from_years(2)))), 1))       
+    .sort_by(Count(project::Commits))
+    .sample(Distinct(Top(50), MinRatio(project::Commits, 0.9)))
+```
+
+50% Experienced:
+```rust
+database.projects()
+    .group_by(project::Language)
+    .filter_by(AtLeast(Count(project::Users), 2))
+    .filter_by(AtLeast(Ratio(FromEachIf(project::Users, AtLeast(user::Experience, Duration::from_years(2))), project::Users), Fraction::new(1, 2)))
+    .sample(Distinct(Top(50), MinRatio(project::Commits, 0.9)))
+```
+
+Message size:
+```rust
+database.projects()
+    .group_by(project::Language)
+    .sort_by(Median(FromEach(project::Commits, commit::MessageLength)))
+    .sample(Distinct(Top(50), MinRatio(project::Commits, 0.9)))
+```
+
+Commits:
+```rust
+database.projects()
+    .group_by(project::Language)
+    .sort_by(Count(project::Commits))
+    .sample(Distinct(Top(50), MinRatio(project::Commits, 0.9)))
+```
+
+Issues:
+```rust
+database.projects()
+    .group_by(project::Language)
+    .sort_by(Count(project::AllIssues))
+    .sample(Distinct(Top(50), MinRatio(project::Commits, 0.9)))   
+}
+```
+
+All the queries are collected into a Rust crate in directory 
+`queries/paper`. This crate was created by the same
+procedure as presented in Part 1 of this document. The source code of all
+the queries can be found in `queries/paper/src/lib.rs` and can be executed 
+by running `queries/paper/src/bin/djanco.rs`.
+
+## Dataset
+
+The whole process of project selection requires the dataset to be downloaded. 
+In order to run the queries the reader must put in place the dataset used in the paper as described in:
+
+[2.1-case-study-dataset.Rmd](2.1-case-study-dataset.Rmd)
+
+## Running the queries and postprocessing
+
+The project selection then runs on the dataset---this can take a long time: hours 
+or tens of hours depending on hardware. After the queries are executed the results 
+are post-processed to fit the format required by analysis.
+
+## Project selection queries
+
+To execute the queries on the dataset used in the paper run:
+
+```{bash}
+cd queries
+cargo run --bin djanco --release -- --dataset-path ../dataset/paper --output-path ../query-results/paper
+cd ...
+```
+
+The query results are generated into the directory `query-results/paper`. They consist of
+the following files:
+
+```
+query-results/paper/
+├── all_issues.list
+├── commits.list
+├── experienced_authors.list
+├── experienced_authors_ratio.list
+├── mean_changes_in_commits.list
+├── median_commit_message_sizes.list
+└── stars.list
+```
+
+Each file is actually a CSV file. It contains a single column: `project_id`. 
+The column contains the ID of the project in the dataset. Since this is not 
+a very helpful representation, the selection is then post-processed to be 
+useful for the analyses in the paper.
+
+### Preprocessing 1: commit
+ 
+Convert the results of the queries into a format that can be used for further analysis.
+First, we generate data about commits in each of the selected projects. We also generate
+a summary for the entire dataset along similar lines.
+
+```{bash}
+parasite/target/release/ecoop-artifact --datastore dataset export query-results/stars.list                       query-results/stars.csv
+parasite/target/release/ecoop-artifact --datastore dataset export query-results/commits.list                     query-results/commits.csv
+parasite/target/release/ecoop-artifact --datastore dataset export query-results/experienced_author.list          query-results/experienced_author.csv
+parasite/target/release/ecoop-artifact --datastore dataset export query-results/experienced_authors_ratio.list   query-results/experienced_authors_ratio.csv
+parasite/target/release/ecoop-artifact --datastore dataset export query-results/mean_changes_in_commits.list     query-results/mean_changes_in_commits.csv
+parasite/target/release/ecoop-artifact --datastore dataset export query-results/median_commit_message_sizes.list query-results/median_commit_message_sizes.csv
+parasite/target/release/ecoop-artifact --datastore dataset export query-results/all_issues.list                  query-results/all_issues.csv
+parasite/target/release/ecoop-artifact --datastore dataset export --all                                          query-results/full_dataset.csv
+```
+
+Thie produces the following file tree in the `query-results/paper` directory:
+
+```
+query-results/paper/
+├── all_issues.list
+├── all_issues.csv
+├── commits.list
+├── commits.csv
+├── experienced_authors.list
+├── experienced_authors.csv
+├── experienced_authors_ratio.list
+├── experienced_authors_ratio.csv
+├── full_dataset.csv
+├── mean_changes_in_commits.list
+├── mean_changes_in_commits.csv
+├── stars.list
+└── stars.csv
+```
+
+The generated CSV files contain the following columns:
+
+- **language**,
+- typeclass,
+- langclass,
+- memoryclass,
+- compileclass,
+- project,
+- **sha**,
+- **files**,
+- **committer**,
+- **commit_date**,
+- commit_age,
+- **insertion**,
+- **deletion**,
+- **isbug**,
+- bug_type,
+- phase,
+- domain,
+- btype1,
+- btype2
+
+The format is this complicated because of compatibility with the study in the FSE2014 paper, 
+however, for the purposes of the current work, we only require some of these columns. 
+We do not populate columns we do not need. We indicate populated columns in bold.
+
+### Preprocessing 2: summaries
+
+Then, prepare a set of results containing summaries of key characteristics of each project and languages within each projects:
+
+```{bash}
+parasite/target/release/ecoop-artifact --datastore dataset compact query-results/stars.csv                       query-results/stars_p.csv                       query-results/stars_pl.csv      
+parasite/target/release/ecoop-artifact --datastore dataset compact query-results/commits.csv                     query-results/commits_p.csv                     query-results/commits_pl.csv 
+parasite/target/release/ecoop-artifact --datastore dataset compact query-results/experienced_authors.csv         query-results/experienced_authors_p.csv         query-results/experienced_authors_pl.csv
+parasite/target/release/ecoop-artifact --datastore dataset compact query-results/experienced_authors_ratio.csv   query-results/experienced_authors_ratio_p.csv   query-results/experienced_authors_ratio_pl.csv
+parasite/target/release/ecoop-artifact --datastore dataset compact query-results/mean_changes_in_commits.csv     query-results/mean_changes_in_commits_p.csv       query-results/mean_changes_in_commits_pl.csv
+parasite/target/release/ecoop-artifact --datastore dataset compact query-results/median_commit_message_sizes.csv query-results/median_commit_message_sizes_p.csv query-results/median_commit_message_sizes_pl.csv
+parasite/target/release/ecoop-artifact --datastore dataset compact query-results/all_issues.csv                  query-results/all_issues_p.csv                  query-results/all_issues_pl.csv 
+parasite/target/release/ecoop-artifact --datastore dataset compact query-results/full_dataset.csv                query-results/full_dataset_p.csv                query-results/full_dataset_pl.csv
+```
+
+This generates two CSV files per input as follows:
+
+```
+query-results/paper/
+├── all_issues.csv
+├── all_issues_p.csv
+├── all_issues_pl.csv
+├── commits.csv
+├── commits_p.csv
+├── commits_pl.csv
+├── experienced_authors.csv
+├── experienced_authors_p.csv
+├── experienced_authors_pl.csv
+├── experienced_authors_ratio.csv
+├── experienced_authors_ratio_p.csv
+├── experienced_authors_ratio_pl.csv
+├── full_dataset.csv
+├── full_dataset_p.csv
+├── full_dataset_pl.csv
+├── mean_changes_in_commits.csv
+├── mean_changes_in_commits_p.csv
+├── mean_changes_in_commits_pl.csv
+├── median_commit_message_sizes.csv
+├── median_commit_message_sizes_p.csv
+├── median_commit_message_sizes_pl.csv
+├── stars.csv
+├── stars_p.csv
+└── stars_pl.csv
+```
+
+The generated files marked `_p` are summaries of projects and contain the following columns:
+
+- project,
+- languages,
+- commits,
+- bugs,
+- changes,
+- autors,
+- age.
+
+
+The files marked `_pl` are summeries of languages within projects and contain the following columns:
+
+- project,
+- language,
+- commits,
+- bugs,
+- changes,
+- pctCommits,
+- pctBugs,
+- pctChanges,
+- pctLanguages.
+
+### Preprocessing 3: TypeScript analysis
+
+The last post-processing step generates samples for an overview of TypeScript over a period of several years. This is done in R.
+
+This step takes multiple hours. The execution time can be shortened by lowering the number of samples extracted from 
+the data in each year. Change the number in the code snippet below and run it to adjust the sampling rate.
+
+```{r}
+SAMPLES_PER_YEAR <- 10000
+```
+
+Then run:
+
+```{r}
+INPUT_FILE <- "query-results/paper/full_dataset.csv"
+OUTPUT_DIR <- "query-results/paper/ts_by_year/"
+
+library(readr)
+library(stringr)
+library(dplyr)
+library(tidyr)
+library(MASS)
+
+# Year definitions
+years <- c(1356998400, 1388534400, 1420070400, 1451606400, 1483228800, 1514764800, 1546300800, 1577836800)
+ys    <- c(2013,       2014,       2015,       2016,       2017,       2018,       2019,       2020)
+
+# Helper functions
+load_dataset = function(path) {
+  result = read_delim(path, delim=',', escape_double=FALSE, escape_backslash=TRUE, quote="\"")
+  result = result %>% dplyr::select(language, project, sha, files, devs = committer, commit_date, commit_age, insertion, deletion, isbug)
+  result$language = as.factor(result$language)
+  invisible(result)
+}
+fix_commit_age = function(dataset) {
+  dataset %>% group_by(project) %>% mutate(min_date = min(commit_date)) %>% mutate(commit_age = as.integer((commit_date - min_date)/(24 * 3600))) %>% dplyr::select(-c(min_date))
+}
+fix_too_small_groups = function(dataset) {
+  dataset %>% group_by(project, language) %>% mutate(n = n()) %>% filter(n > 20) %>% dplyr::select(-c(n))
+}
+summarizeByLanguage = function(what) {
+  what %>% 
+    group_by(project, language) %>%
+    dplyr::summarize(
+      commits = n_distinct(sha),
+      tins = sum(insertion),
+      max_commit_age = max(commit_age),
+      bcommits = sum(isbug),
+      devs = n_distinct(devs)
+    )
+}
+logTransform = function(what, log1 = log, log2 = log) {
+  data.frame(
+    language = what$language, 
+    ldevs = log1(what$devs),
+    lcommits=log1(what$commits),
+    ltins=log2(what$tins),
+    lmax_commit_age=log1(what$max_commit_age),
+    lbcommits=log2(what$bcommits + 0.5*(what$bcommits==0)),
+    bcommits=what$bcommits,
+    language_r = relevel(what$language, rev(levels(what$language))[1]),
+    commits = what$commits
+  )
+}
+contr.Weights <- function(fac) {
+  # Weighted contrasts as described and used by the authors of the original paper
+  fDist=summary(fac)
+  fSum=contr.sum(levels(fac))		
+  fSum[nrow(fSum),] = -fDist[1:ncol(fSum)]/fDist[length(fDist)]
+  fSum
+}
+combineModels = function(model, model_r, var, pValAdjust = "none") {
+  # Takes the glm model and the releveled second model for the last observation and combines them together returning a single data frame
+  controlVariables = 4
+  s = summary(model)$coefficients
+  s_r = summary(model_r)$coefficients
+  rownames = getModelRowNames(model, var)
+  coef = round(c(s[,1], s_r[controlVariables + 2, 1]), 2)
+  se = round(c(s[,2], s_r[controlVariables + 2, 2]), 2)
+  pVal = c(s[,4], s_r[controlVariables + 2, 4])
+  if (pValAdjust == "bonferroni" || pValAdjust == "fdr")
+    pVal[(controlVariables + 2):length(pVal)] = p.adjust(pVal[(controlVariables + 2):length(pVal)], pValAdjust)
+  names(coef) = rownames
+  data.frame(
+    coef, 
+    se,
+    pVal
+  )
+} 
+getModelRowNames = function(model, var) {
+  controlVariables = 4
+  rownames = c(dimnames(summary(model)$coefficients)[[1]][1:(1 + controlVariables)], names(summary(var)))
+  names(rownames) = rownames
+  rownames[["(Intercept)"]] = "Intercept"
+  rownames[["lmax_commit_age"]] = "log age"
+  rownames[["ltins"]] = "log size"
+  rownames[["ldevs"]] = "log devs"
+  rownames[["lcommits"]] = "log commits"
+  rownames
+}
+calculateModel = function(dataset, dataset_name) {
+  X = summarizeByLanguage(dataset)
+  X$max_commit_age[X$max_commit_age == 0] <- 1
+  Y = logTransform(X, log, log)
+  # fit the negative binomial regression
+  weights = contr.Weights(Y$language)
+  nbfit = glm.nb(bcommits~lmax_commit_age+ltins+ldevs+lcommits+language, contrasts = list(language = contr.Weights(Y$language)), data=Y)
+  nbfit_r = glm.nb(bcommits~lmax_commit_age+ltins+ldevs+lcommits+language_r, contrasts = list(language_r = contr.Weights(Y$language_r)), data=Y)
+  # combine them into single result table
+  result = combineModels(nbfit, nbfit_r, Y$language)
+  result$pVal = round(result$pVal, digits = 3)
+  result$name = rownames(result)
+  result$dataset = dataset_name
+  result$signifficant = result$pVal <= 0.05 # orly? 
+  result
+}
+
+# Load dataset
+ours_fixed <- load_dataset(INPUT_FILE) %>% fix_commit_age %>% fix_too_small_groups
+small_projects <- ours_fixed %>% group_by(project) %>% summarize(commits = n_distinct(sha)) %>% filter(commits >= 28)
+ours_fixed <- ours_fixed %>% filter(project %in% small_projects$project)
+
+for (i in 1:length(years)){
+  cat(paste0(ys[i], "\n"))
+  
+  ye <- subset(ours_fixed, commit_date < years[i])
+  X <- summarizeByLanguage(ye)
+  X$max_commit_age[X$max_commit_age == 0] <- 1
+  Y <- logTransform(X, log, log)
+  Y$ltins[is.infinite(Y$ltins)] <- 0
+  
+  for (j in 1:SAMPLES_PER_YEAR) {
+      # extract samples
+    subset_Y <- Y %>% group_by(language) %>% sample_n(50, replace = TRUE)
+    weights = contr.Weights(subset_Y$language)
+    nbfit = glm.nb(bcommits~lmax_commit_age+ltins+ldevs+lcommits+language, contrasts = list(language = contr.Weights(subset_Y$language)), data=subset_Y)
+    nbfit_r = glm.nb(bcommits~lmax_commit_age+ltins+ldevs+lcommits+language_r, contrasts = list(language_r = contr.Weights(subset_Y$language_r)), data=subset_Y)
+    
+    # combine them into single result table
+    result = combineModels(nbfit, nbfit_r, subset_Y$language)
+    result$pVal = round(result$pVal, digits = 3)
+    result$name = rownames(result)
+    result$dataset = 'subset'
+    result$signifficant = result$pVal <= 0.05 # orly? 
+    result
+
+    # output results
+    dir.create(paste0(OUTPUT_DIR, ys[i]), recursive=TRUE)
+    write.csv(result[c("coef", "pVal")], file = paste(paste(paste(paste(paste(OUTPUT_DIR, ys[i], sep = ''), '/', sep = ''), j, sep = ''), ys[i], sep =''), '_new.csv', sep = ''))  
+  }
+}
+```
+
+The script generates a directory for each sampled year. Each directory contains a CSV file per sample.

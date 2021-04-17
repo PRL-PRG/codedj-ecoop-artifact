@@ -1,0 +1,59 @@
+~~~
+NOTE
+
+This is an R markdown document. It's like a markdown document, but has 
+executable snippets of code that do the work (in various languages, including
+bash, Python, R). It can be viewed using Rstudio---we recommend doing this.
+
+    rstudio 2.1-case-study-dataset.Rmd
+
+It can also be executed (in whole) with R using the following bash snippet:*
+ 
+    Rscript -e "rmarkdown::render('2.1-case-study-dataset.Rmd')"
+
+This will compile the document into HTML while executing all the code 
+snippets in the document.
+
+This is the root document of the artifact. Start reading here.
+~~~
+
+# Part 2.1. Case study: dataset
+
+The dataset used in the analysis in the paper is constructed by downloading the
+repositories listed in `paper-dataset-repositories.csv` containing 229,933 
+GitHub URLs. We provide a pre-downloaded dataset at 
+
+```
+TODO
+```
+
+We do not recommend downloading it yourself since it will take a significant
+amount of time (days) and disk space (hundreds of gigabytes). Nevertheless, you can. You require a
+`ghtokens.csv` file containing at least one valid github personal access
+token.
+
+```
+token
+fa56454....
+```
+
+Create a directory for the dataset:
+```bash
+mkdir -p dataset/
+mkdir -p dataset/repo_clones
+```
+
+Then, add the repositories to the dataset:
+
+```bash
+parasite/target/release/parasite --datastore paper-dataset add paper-dataset-repositories.csv
+```
+
+Then, turn on interactive mode and start the download by executing 
+`loadall` followed by `updateall`.
+
+```bash
+parasite/target/release/parasite --datastore paper-dataset -ght ghtokens.csv -n 8 --interactive
+```
+
+Wait until completed.

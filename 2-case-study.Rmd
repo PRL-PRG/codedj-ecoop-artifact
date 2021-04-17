@@ -1,0 +1,133 @@
+~~~
+NOTE
+
+This is an R markdown document. It's like a markdown document, but has 
+executable snippets of code that do the work (in various languages, including
+bash, Python, R). It can be viewed using Rstudio---we recommend doing this.
+
+    rstudio 2.case-study.Rmd
+
+It can also be executed (in whole) with R using the following bash snippet:*
+ 
+    Rscript -e "rmarkdown::render('2-case-study.Rmd')"
+
+This will compile the document into HTML while executing all the code 
+snippets in the document.
+
+This is the root document of the artifact. Start reading here.
+~~~
+
+# Part 2. Case study: of bugs and languages
+
+The paper's motivation is the claim that the selection of inputs matters in empirical studies
+of software and that Code DJ can assist researchers in that process. We illustrate these points
+with a case study. We start from prior work, and show that input selection impacts scientific
+claims, and that Code DJ allows rapid exploration of the input space.
+
+This section of the artifact aims to replicate the case study in three parts:
+
+- download the dataset,
+- perform project selection for the queries in the paper,
+- perform experiments from the paper.
+
+The stages are described below and details for re-running them are provided in separate Rmd files.
+
+## Download the dataset
+
+This stage downloads the dataset used to perform the study. 
+
+The dataset used in the analysis in the paper is constructed by downloading the
+repositories listed in `paper-dataset-repositories.csv` containing 230K
+GitHub URLs. The downloaded dataset takes up 36GB on disk and contains ~230K 
+projects and 47M unique commits.
+
+The dataset itself is not strictly necessary to run the remainder of the case study, 
+so getting it is optional.
+
+The following document provides instructions on how to either download the pre-constructed 
+dataset from our servers or to construct one from scratch.
+
+[2.1-case-study-dataset.Rmd](2.1-case-study-dataset.Rmd)
+
+### A note on development history of Parasite and Djanco
+
+The system used for the study in the paper has undergone development since the paper was submitted. 
+We converted the original dataset to the new downloader format rather than re-downloading it.
+The current dataset collects different data and from different sources. The original dataset was supplemented with data
+from GHTorrent: star counts and issue information. We found this data to be very rough (big different from values seen 
+on GitHub, not present for all projects), so our current version of the downloader ditches GHTorrent in favor of 
+downloading project metadata using the GitHub API and provides different metadata for projects. The current version has
+new attributes that the old version did not have. On the other hand, the current version does not retrieve issues counts
+because they are very uneconomical to obtain via the GitHub API. 
+
+This has a few implications for the artifact. The converted dataset has many empty project attributes that the original 
+dataset did not collect: IsFork, IsArchived, IsDisabled,
+Watchers, Open_issues, Forks, Subscribers, HasIssues, HasDownloads, HasWiki, HasPages, DefaultBranch, License, Homepage, Description. 
+If the reader writes their own queries using these attributes and the provided dataset, these will be empty. 
+If the dataset were to be redownloaded, it will not contain Issues, BuggyIssues, or AllIssues project attributes (but it will 
+contain all the other properties listed above).
+
+The current dataset stores entities more efficiently in terms of disk space: it takes up 36GB on disk,
+rather than 51GB as mentioned in the paper.
+
+## Perform project selection for the queries in the paper
+
+Choosing any subset of a larger population introduces bias, but this may be intentional,
+reflecting domain knowledge about the relative importance of observations. For instance,
+small projects with few commits may be less interesting as they correlate with student
+projects. These projects have fewer descriptive commit messages and their defects reflect
+beginner mistakes. It stands to reason to exclude such projects from consideration. Justifying
+the choice of any particular selection criterion is beyond the scope of our work. What Code DJ
+can do is let researchers explore the impact of various subsets their criteria produce. The
+experiment in the paper looks at several different criteria for selecting projects based on 
+popularity:
+
+* **Stars:** Pick projects with most stars. Rationale: starred projects are 
+  popular and thus likely to be well written and maintained. 
+* **Touched Files:** compute #files changed by commits, pick projects that
+  changed the most files. Rationale: indicative of projects where commits 
+  represent larger units of work.
+* **Experienced Author:** experienced developers are those on GitHub for at 
+  least two years; pick a sample of projects with at least one experienced 
+  contributor. Rationale: less likely to be throw-away projects.
+* **50% Experienced:** projects with two or more developers, half of which 
+  experienced. Rationale: focus on larger teams.
+* **Message Size:** Compute size in bytes of commit messages; pick projects 
+  with the largest size. Rationale: empty or trivial commit messages 
+  indicate uninteresting projects.
+* **Number of Commits:** Compute the number of commits; pick projects with the 
+  most commits. Rationale: larger projects are more mature.
+* **Issues:** Pick projects with the most issues. Rationale: issues indicate 
+  a more structured development process.
+
+The following document provides instructions on how execute the queries on the 
+dataset. This step also post-processes the data and creates 
+
+[2.1-case-study-dataset.Rmd](2.1-case-study-dataset.Rmd)
+
+The queries take a long time to execute on our relatively beefy rig (hours) and are very 
+hard to execute on laptops and desktops within reasonable time. If the reader does not 
+wish to re-execute them (or to download the full dataset) they can be skipped. We provide the 
+results of the queries in `query-results`.
+
+The queries each create a file containing project IDs of projects in the dataset and 
+a csv file containing summary information about each project.
+
+### Perform experiments from the paper
+
+TODO
+
+This section processes the results from the previous sections and generates
+figures. Additional data is attached to the project list from the dataset. 
+Then, data is processd and analyzed using R. The final part of the analysis and
+graph generation is done in Python. 
+
+All the code snipepts are embedded in this Rmd file and are one-click
+executable from RStudio.
+
+
+    - random input selection,
+    - observing change over time,
+    - introducing domain knowledge,
+    - project size and age distributions.
+

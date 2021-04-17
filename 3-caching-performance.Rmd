@@ -1,0 +1,6 @@
+# Part 3. Caching performance
+
+We have benchamrked and pre-tuned Djanco to cache only when it is clearly
+adventageous. The paper shows the performance of caching on a dataset
+containing 130K projects and 44M commits. For the artifact we prepared a
+smaller dataset of 1K projects.

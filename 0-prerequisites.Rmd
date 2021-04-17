@@ -1,0 +1,64 @@
+# Prerequisites
+
+This document describes all the components that need to be installed to run the
+artifact. We provide code snippets to install all libraries in Ubuntu.
+
+We installed all the prerequisite dependencies on the artifact image, so the
+user of the artifact does not *need* to run these to use the artifact.
+
+## General dependencies
+
+Git:
+
+```bash
+sudo apt install git
+```
+
+Curl:
+
+```
+sudo apt install curl
+```
+
+Misc. bindings, tools, and programming libraries (SSL, libgit2, cmake, libicu, zlib1g, cloc, pkg-config)
+
+```bash
+sudo apt-get install libssl-dev libgit2-dev cmake pkg-config libicu-dev zlib1g-dev cloc
+```
+
+## Rust and Cargo
+
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+```
+
+## Ruby and Ruby packages
+
+```bash
+sudo apt install ruby-dev
+gem install github-linguist
+```
+
+## R and R packages
+
+```bash
+sudo apt install r-base
+R -e 'install.packages(c("MASS", "readr", "dplyr", "ggplot2", "knitr", "data.table", "assertthat", "fst", "stringr", "ggrepel", "scales", "xtable", "gplots", "plyr", "gridExtra", "grid", "tidyr"))'
+
+```
+
+## R studio
+
+```bash
+sudo apt install gdebi
+curl https://download1.rstudio.org/desktop/bionic/amd64/rstudio-1.4.1106-amd64.deb > rstudio-1.4.1106-amd64.deb
+sudo gdebi rstudio-1.4.1106-amd64.deb
+R -e 'install.packages(c("reticulate"))'
+```
+
+## Python and Python packages
+
+```bash
+sudo apt install python3 python-is-python3 pip3
+pip3 install jupyter numpy seaborn pandas
+```
