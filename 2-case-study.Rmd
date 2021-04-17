@@ -57,6 +57,8 @@ associated with fewer bugs, while C, C++, Objective-C, JavaScript, PHP and Pytho
 associated with more bugs. The remaining languages did not have statistically significant
 coefficients. 
 
+Our first experiment explores the distribution of possible analysis outcomes. 
+
 ## Download the dataset
 
 This stage downloads the dataset used to perform the study. 
@@ -126,9 +128,9 @@ popularity:
   a more structured development process.
 
 The following document provides instructions on how execute the queries on the 
-dataset. This step also post-processes the data and creates 
+dataset. This step also post-processes the data and creates. 
 
-[2.1-case-study-dataset.Rmd](2.1-case-study-dataset.Rmd)
+[2.2-case-study-project-selection.Rmd](2.2-case-study-project-selection.Rmd)
 
 The queries take a long time to execute on our relatively beefy rig (hours) and are very 
 hard to execute on laptops and desktops within reasonable time. If the reader does not 
@@ -148,8 +150,16 @@ graph generation is done in Python.
 All the code snipepts are embedded in this Rmd file and are one-click
 executable from RStudio.
 
-- random input selection,
-- observing change over time,
-- introducing domain knowledge,
-- project size and age distributions.
+The following experiments are discussed in detail:
+
+- Random subsets (Fig. 4)
+- TypeScript over time (Fig. 5)
+- Domain knowledge (Fig. 6)
+- Domain knowledge (Fig. 7)
+
+The following document provides the details and runnable sscripts re-creating the pipeline:
+
+[2.3-case-study-data-analysis-and-graphs.Rmd](2.3-case-study-data-analysis-and-graphs.Rmd)
+
+
 

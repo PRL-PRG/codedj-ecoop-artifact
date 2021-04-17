@@ -35,14 +35,12 @@ pub fn main() {
 
     let database = prepare_database!(1617235200 /* = April 2021*/, stores!(Generic));
     execute_query!(database, paper_queries::stars);
-    //execute_query!(database, paper_queries::mean_changed_paths);
-    //execute_query!(database, paper_queries::median_changed_paths);
+    execute_query!(database, paper_queries::mean_changes_in_commits);
     execute_query!(database, paper_queries::experienced_author);
     execute_query!(database, paper_queries::experienced_authors_ratio);
-    //execute_query!(database, paper_queries::mean_commit_message_sizes);
     execute_query!(database, paper_queries::median_commit_message_sizes);
     execute_query!(database, paper_queries::commits);
-    execute_query!(database, paper_queries::dump);
+    execute_query!(database, paper_queries::issues);
 
 
     if options.repository.is_some() && !options.do_not_archive_results {

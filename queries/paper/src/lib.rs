@@ -84,7 +84,7 @@ pub fn commits(database: &Database, _log: &Log, output: &Path) -> Result<(), std
 pub fn issues(database: &Database, _log: &Log, output: &Path) -> Result<(), std::io::Error>  {
     database.projects()
         .group_by(project::Language)
-        .sort_by(Count(project::AllIssues))
+        .sort_by(project::AllIssues)
         .sample(Distinct(Top(50), MinRatio(project::Commits, 0.9)))
         .ungroup()
         .map_into(project::Id)
