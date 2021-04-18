@@ -660,6 +660,8 @@ return the population of interest. The Figure also suggest that stars is not a g
 ```{python fig.width=14, fig.height:9}
 import numpy as np
 import pandas as pd
+import matplotlib as mpl
+mpl.use('Agg')
 import matplotlib.pyplot as plt
 import seaborn as sns
 from matplotlib.colors import LogNorm
@@ -677,13 +679,6 @@ df_names = ['full_dataset_p.csv',
             'all_issues_p.csv',
             'mean_changes_in_commits_p.csv',
           ]
-
-frames = []
-
-for i,f in enumerate(df_names):
-    temp = pd.read_csv(r.INPUT_DIR + f)
-    temp['name'] = [names[i]] * len(temp.index)
-    frames.append(temp)
 
 names = ['Full dataset',
          'Stars',
