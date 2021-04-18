@@ -423,7 +423,6 @@ logTransform = function(what, log1 = log, log2 = log) {
         language = what$language, 
         ldevs = log1(what$devs),
         lcommits=log1(what$commits),
-        ltins=log2(what$tins),
         lmax_commit_age=log1(what$max_commit_age),
         lbcommits=log2(what$bcommits + 0.5*(what$bcommits==0)),
         bcommits=what$bcommits,
@@ -466,12 +465,11 @@ combineModels = function(model, model_r, var, pValAdjust = "none") {
 } 
 
 getModelRowNames = function(model, var) {
-    controlVariables = 4
+    controlVariables = 3
     rownames = c(dimnames(summary(model)$coefficients)[[1]][1:(1 + controlVariables)], names(summary(var)))
     names(rownames) = rownames
     rownames[["(Intercept)"]] = "Intercept"
     rownames[["lmax_commit_age"]] = "log age"
-    rownames[["ltins"]] = "log size"
     rownames[["ldevs"]] = "log devs"
     rownames[["lcommits"]] = "log commits"
     rownames
@@ -485,8 +483,8 @@ calculateModel = function(dataset, dataset_name) {
     Y = logTransform(X, log, log)
     # fit the negative binomial regression
     weights = contr.Weights(Y$language)
-    nbfit = glm.nb(bcommits~lmax_commit_age+ltins+ldevs+lcommits+language, contrasts = list(language = contr.Weights(Y$language)), data=Y)
-    nbfit_r = glm.nb(bcommits~lmax_commit_age+ltins+ldevs+lcommits+language_r, contrasts = list(language_r = contr.Weights(Y$language_r)), data=Y)
+    nbfit = glm.nb(bcommits~lmax_commit_age+ldevs+lcommits+language, contrasts = list(language = contr.Weights(Y$language)), data=Y)
+    nbfit_r = glm.nb(bcommits~lmax_commit_age+ldevs+lcommits+language_r, contrasts = list(language_r = contr.Weights(Y$language_r)), data=Y)
     # combine them into single result table
     result = combineModels(nbfit, nbfit_r, Y$language)
     result$pVal = round(result$pVal, digits = 3)
