@@ -219,7 +219,7 @@ We do not populate columns we do not need. We indicate populated columns in bold
 Then, prepare a set of results containing summaries of key characteristics of each project and languages within each projects:
 
 ```{bash}
-parasite/target/release/ecoop-artifact --datastore datasets/dataset compact query-results/paper/stars.csv                       query-results/paper/paper/stars_p.csv                 query-results/paper/stars_pl.csv      
+parasite/target/release/ecoop-artifact --datastore datasets/dataset compact query-results/paper/stars.csv                       query-results/paper/stars_p.csv                 query-results/paper/stars_pl.csv      
 parasite/target/release/ecoop-artifact --datastore datasets/dataset compact query-results/paper/commits.csv                     query-results/paper/commits_p.csv                     query-results/paper/commits_pl.csv 
 parasite/target/release/ecoop-artifact --datastore datasets/dataset compact query-results/paper/experienced_authors.csv         query-results/paper/experienced_authors_p.csv         query-results/paper/experienced_authors_pl.csv
 parasite/target/release/ecoop-artifact --datastore datasets/dataset compact query-results/paper/experienced_authors_ratio.csv   query-results/paper/experienced_authors_ratio_p.csv   query-results/paper/experienced_authors_ratio_pl.csv
