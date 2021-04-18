@@ -290,7 +290,7 @@ This step takes multiple hours. The execution time can be shortened by lowering 
 the data in each year. Change the number in the code snippet below and run it to adjust the sampling rate.
 
 ```{r}
-SAMPLES_PER_YEAR <- 10000
+SAMPLES_PER_YEAR <- 100
 ```
 
 Then run:
@@ -355,7 +355,7 @@ contr.Weights <- function(fac) {
 }
 combineModels = function(model, model_r, var, pValAdjust = "none") {
   # Takes the glm model and the releveled second model for the last observation and combines them together returning a single data frame
-  controlVariables = 4
+  controlVariables = 3
   s = summary(model)$coefficients
   s_r = summary(model_r)$coefficients
   rownames = getModelRowNames(model, var)
@@ -372,12 +372,11 @@ combineModels = function(model, model_r, var, pValAdjust = "none") {
   )
 } 
 getModelRowNames = function(model, var) {
-  controlVariables = 4
+  controlVariables = 3
   rownames = c(dimnames(summary(model)$coefficients)[[1]][1:(1 + controlVariables)], names(summary(var)))
   names(rownames) = rownames
   rownames[["(Intercept)"]] = "Intercept"
   rownames[["lmax_commit_age"]] = "log age"
-  rownames[["ltins"]] = "log size"
   rownames[["ldevs"]] = "log devs"
   rownames[["lcommits"]] = "log commits"
   rownames
@@ -388,8 +387,8 @@ calculateModel = function(dataset, dataset_name) {
   Y = logTransform(X, log, log)
   # fit the negative binomial regression
   weights = contr.Weights(Y$language)
-  nbfit = glm.nb(bcommits~lmax_commit_age+ltins+ldevs+lcommits+language, contrasts = list(language = contr.Weights(Y$language)), data=Y)
-  nbfit_r = glm.nb(bcommits~lmax_commit_age+ltins+ldevs+lcommits+language_r, contrasts = list(language_r = contr.Weights(Y$language_r)), data=Y)
+  nbfit = glm.nb(bcommits~lmax_commit_age+ldevs+lcommits+language, contrasts = list(language = contr.Weights(Y$language)), data=Y)
+  nbfit_r = glm.nb(bcommits~lmax_commit_age+ldevs+lcommits+language_r, contrasts = list(language_r = contr.Weights(Y$language_r)), data=Y)
   # combine them into single result table
   result = combineModels(nbfit, nbfit_r, Y$language)
   result$pVal = round(result$pVal, digits = 3)
@@ -417,8 +416,8 @@ for (i in 1:length(years)){
       # extract samples
     subset_Y <- Y %>% group_by(language) %>% sample_n(50, replace = TRUE)
     weights = contr.Weights(subset_Y$language)
-    nbfit = glm.nb(bcommits~lmax_commit_age+ltins+ldevs+lcommits+language, contrasts = list(language = contr.Weights(subset_Y$language)), data=subset_Y)
-    nbfit_r = glm.nb(bcommits~lmax_commit_age+ltins+ldevs+lcommits+language_r, contrasts = list(language_r = contr.Weights(subset_Y$language_r)), data=subset_Y)
+    nbfit = glm.nb(bcommits~lmax_commit_age+ldevs+lcommits+language, contrasts = list(language = contr.Weights(subset_Y$language)), data=subset_Y)
+    nbfit_r = glm.nb(bcommits~lmax_commit_age+ldevs+lcommits+language_r, contrasts = list(language_r = contr.Weights(subset_Y$language_r)), data=subset_Y)
     
     # combine them into single result table
     result = combineModels(nbfit, nbfit_r, subset_Y$language)
