@@ -159,14 +159,14 @@ First, we generate data about commits in each of the selected projects. We also 
 a summary for the entire dataset along similar lines.
 
 ```{bash}
-parasite/target/release/ecoop-artifact --datastore dataset export query-results/paper/stars.list                       query-results/paper/stars.csv
-parasite/target/release/ecoop-artifact --datastore dataset export query-results/paper/commits.list                     query-results/paper/commits.csv
-parasite/target/release/ecoop-artifact --datastore dataset export query-results/paper/experienced_author.list          query-results/paper/experienced_author.csv
-parasite/target/release/ecoop-artifact --datastore dataset export query-results/paper/experienced_authors_ratio.list   query-results/paper/experienced_authors_ratio.csv
-parasite/target/release/ecoop-artifact --datastore dataset export query-results/paper/mean_changes_in_commits.list     query-results/paper/mean_changes_in_commits.csv
-parasite/target/release/ecoop-artifact --datastore dataset export query-results/paper/median_commit_message_sizes.list query-results/paper/median_commit_message_sizes.csv
-parasite/target/release/ecoop-artifact --datastore dataset export query-results/paper/all_issues.list                  query-results/paper/all_issues.csv
-parasite/target/release/ecoop-artifact --datastore dataset export --all                                                query-results/paper/full_dataset.csv
+parasite/target/release/ecoop-artifact --datastore datasets/dataset export query-results/paper/stars.list                       query-results/paper/stars.csv
+parasite/target/release/ecoop-artifact --datastore datasets/dataset export query-results/paper/commits.list                     query-results/paper/commits.csv
+parasite/target/release/ecoop-artifact --datastore datasets/dataset export query-results/paper/experienced_author.list          query-results/paper/experienced_author.csv
+parasite/target/release/ecoop-artifact --datastore datasets/dataset export query-results/paper/experienced_authors_ratio.list   query-results/paper/experienced_authors_ratio.csv
+parasite/target/release/ecoop-artifact --datastore datasets/dataset export query-results/paper/mean_changes_in_commits.list     query-results/paper/mean_changes_in_commits.csv
+parasite/target/release/ecoop-artifact --datastore datasets/dataset export query-results/paper/median_commit_message_sizes.list query-results/paper/median_commit_message_sizes.csv
+parasite/target/release/ecoop-artifact --datastore datasets/dataset export query-results/paper/all_issues.list                  query-results/paper/all_issues.csv
+parasite/target/release/ecoop-artifact --datastore datasets/dataset export --all                                                query-results/paper/full_dataset.csv
 ```
 
 Thie produces the following file tree in the `query-results/paper` directory:
@@ -219,14 +219,14 @@ We do not populate columns we do not need. We indicate populated columns in bold
 Then, prepare a set of results containing summaries of key characteristics of each project and languages within each projects:
 
 ```{bash}
-parasite/target/release/ecoop-artifact --datastore dataset compact query-results/paper/stars.csv                       query-results/paper/paper/stars_p.csv                 query-results/paper/stars_pl.csv      
-parasite/target/release/ecoop-artifact --datastore dataset compact query-results/paper/commits.csv                     query-results/paper/commits_p.csv                     query-results/paper/commits_pl.csv 
-parasite/target/release/ecoop-artifact --datastore dataset compact query-results/paper/experienced_authors.csv         query-results/paper/experienced_authors_p.csv         query-results/paper/experienced_authors_pl.csv
-parasite/target/release/ecoop-artifact --datastore dataset compact query-results/paper/experienced_authors_ratio.csv   query-results/paper/experienced_authors_ratio_p.csv   query-results/paper/experienced_authors_ratio_pl.csv
-parasite/target/release/ecoop-artifact --datastore dataset compact query-results/paper/mean_changes_in_commits.csv     query-results/paper/mean_changes_in_commits_p.csv     query-results/paper/mean_changes_in_commits_pl.csv
-parasite/target/release/ecoop-artifact --datastore dataset compact query-results/paper/median_commit_message_sizes.csv query-results/paper/median_commit_message_sizes_p.csv query-results/paper/median_commit_message_sizes_pl.csv
-parasite/target/release/ecoop-artifact --datastore dataset compact query-results/paper/all_issues.csv                  query-results/paper/all_issues_p.csv                  query-results/paper/all_issues_pl.csv 
-parasite/target/release/ecoop-artifact --datastore dataset compact query-results/paper/full_dataset.csv                query-results/paper/full_dataset_p.csv                query-results/paper/full_dataset_pl.csv
+parasite/target/release/ecoop-artifact --datastore datasets/dataset compact query-results/paper/stars.csv                       query-results/paper/paper/stars_p.csv                 query-results/paper/stars_pl.csv      
+parasite/target/release/ecoop-artifact --datastore datasets/dataset compact query-results/paper/commits.csv                     query-results/paper/commits_p.csv                     query-results/paper/commits_pl.csv 
+parasite/target/release/ecoop-artifact --datastore datasets/dataset compact query-results/paper/experienced_authors.csv         query-results/paper/experienced_authors_p.csv         query-results/paper/experienced_authors_pl.csv
+parasite/target/release/ecoop-artifact --datastore datasets/dataset compact query-results/paper/experienced_authors_ratio.csv   query-results/paper/experienced_authors_ratio_p.csv   query-results/paper/experienced_authors_ratio_pl.csv
+parasite/target/release/ecoop-artifact --datastore datasets/dataset compact query-results/paper/mean_changes_in_commits.csv     query-results/paper/mean_changes_in_commits_p.csv     query-results/paper/mean_changes_in_commits_pl.csv
+parasite/target/release/ecoop-artifact --datastore datasets/dataset compact query-results/paper/median_commit_message_sizes.csv query-results/paper/median_commit_message_sizes_p.csv query-results/paper/median_commit_message_sizes_pl.csv
+parasite/target/release/ecoop-artifact --datastore datasets/dataset compact query-results/paper/all_issues.csv                  query-results/paper/all_issues_p.csv                  query-results/paper/all_issues_pl.csv 
+parasite/target/release/ecoop-artifact --datastore datasets/dataset compact query-results/paper/full_dataset.csv                query-results/paper/full_dataset_p.csv                query-results/paper/full_dataset_pl.csv
 ```
 
 This generates two CSV files per input as follows:
