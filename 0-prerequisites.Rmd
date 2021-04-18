@@ -11,6 +11,8 @@ It can also be executed (in whole) with R using the following bash snippet:*
 
 This will compile the document into HTML while executing all the code 
 snippets in the document.
+
+> If you are using the provided artifact VM, no code in this notebook needs to be executed as all prerequisites have already been installed for you.
 ~~~
 
 # Prerequisites
@@ -76,6 +78,6 @@ R -e 'install.packages(c("reticulate"))'
 ## Python and Python packages
 
 ```bash
-sudo apt install python3 python-is-python3 pip3
+sudo apt install python3 python-is-python3 python3-pip
 pip3 install jupyter numpy seaborn pandas
 ```

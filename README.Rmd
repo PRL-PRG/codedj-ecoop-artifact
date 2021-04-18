@@ -55,7 +55,10 @@ on display in this artifact:
 The artifact consists of the following parts:
 
 - **Prerequisites**---a description of the packages and tools that need to be
-  installed (all of these are installed in the VM the artifact comes with);
+  installed
+  
+> If you are using the provided VM for artifact evaluation, you can skip prerequisites as these are already provided for you. 
+
 - **Part 1. Getting started**---a walkthrough through the setting up the 
   system from scratch, downloading a dataset, and executing queries;
 - **Part 2. Case study: of bugs and languages**---a re-creation of the 
@@ -145,8 +148,7 @@ the artifact.
 ## Not in the repository
 
 This artifact is deposited in a [GitHub repository](https://github.com/PRL-PRG/codedj-ecoop-artifact). Due to the limitations 
-of the medium, the repository does not include most of the data. This is a list of files that 
-need to be generated or added manually.
+of the medium, the repository does not include most of the data. This is a list of files that are already present in the artifact VM, or are generated manually by the next steps:
 
 ```
 djanco

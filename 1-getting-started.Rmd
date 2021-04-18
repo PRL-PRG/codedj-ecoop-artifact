@@ -11,6 +11,9 @@ It can also be executed (in whole) with R using the following bash snippet:*
 
 This will compile the document into HTML while executing all the code 
 snippets in the document.
+
+> This is a tutorial on how to use codedj from scratch, building your own dataset and runninhg own queries and does not have to be executed in order to simply reproduce the paper claims.
+
 ~~~
 
 
@@ -35,6 +38,7 @@ download and build them Parasite using the following commands:
 rm -rf parasite
 git clone https://github.com/PRL-PRG/codedj-parasite.git parasite
 cd parasite
+git checkout ecoop-artifact
 cargo build --release
 cd ..
 ```
@@ -43,26 +47,10 @@ cd ..
 rm -rf djanco
 git clone https://github.com/PRL-PRG/djanco.git djanco
 cd djanco 
+git checkout ecoop-artifact
 cargo build --release
 cd ..
 ```
-
-### Skipping downloading
-
-Next step is to download a dataset, but we also provide a pre-downloaded dataset in 
-`datasets/predownloaded-toy-dataset`, so the reader may skip downloading the dataset.
-
-To skip downloading, link the existing dataset to the path expected by the rest of the 
-tools:
-
-```{bash}
-cd datasets
-ln -s predownloaded-toy-dataset toy-dataset
-cd ..
-```
-
-This provides a small 10-project dataset using Parasite that is the same 
-as if the reader downloaded it following the steps in the next section.
 
 ### Downloading a toy dataset
 
