@@ -302,11 +302,11 @@ popularity of TypeScript quickly caused real code to crowd out the translation f
 association with bugs settled to around 0.2.
 
 Please note that the number of samples used for generating the graph should not be larger than 
-the number of samples generated during post-processing the dataset (10000 by default). Also note 
+the number of samples generated during post-processing the dataset (100 for the artifact, but 10000 was used for the paper). Also note 
 that the more samples are used, the slower the processing becomes.
 
 ```{python, fig.width=14, fig.height=8}
-SAMPLES = 1000
+SAMPLES = 100
 
 import numpy as np
 import pandas as pd
@@ -511,13 +511,6 @@ Map(output_model, models, names(models))
 
 Use these models to create a graph:
 
-```{r}
-# Install any uninstalled Python packages for reticulate
-py_install("pandas")
-py_install("numpy")
-py_install("matplotlib")
-py_install("seaborn")
-```
 
 ```{python fig.width=24, fig.height:8}
 import numpy as np
