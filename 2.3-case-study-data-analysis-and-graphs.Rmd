@@ -143,7 +143,7 @@ contr.Weights <- function(fac)
 
 # Takes the glm model and the releveled second model for the last observation and combines them together returning a single data frame
 combineModels = function(model, model_r, var, pValAdjust = "none") {
-    controlVariables = 4
+    controlVariables = 3
     s = summary(model)$coefficients
     s_r = summary(model_r)$coefficients
     rownames = getModelRowNames(model, var)
@@ -446,7 +446,7 @@ contr.Weights <- function(fac)
 
 # Takes the glm model and the releveled second model for the last observation and combines them together returning a single data frame
 combineModels = function(model, model_r, var, pValAdjust = "none") {
-    controlVariables = 4
+    controlVariables = 3
     s = summary(model)$coefficients
     s_r = summary(model_r)$coefficients
     rownames = getModelRowNames(model, var)
