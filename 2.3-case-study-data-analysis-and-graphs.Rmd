@@ -217,7 +217,7 @@ the number of samples generated during post-processing the dataset (10000 by def
 that the more samples are used, the slower the processing becomes.
 
 ```{python, fig.width=14, fig.height=8}
-SAMPLES = 10000
+SAMPLES = 100
 
 import numpy as np
 import pandas as pd
