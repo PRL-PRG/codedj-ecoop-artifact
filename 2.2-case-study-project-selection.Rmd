@@ -161,7 +161,7 @@ a summary for the entire dataset along similar lines.
 ```{bash}
 parasite/target/release/ecoop-artifact --datastore dataset export query-results/paper/stars.list                       query-results/paper/stars.csv
 parasite/target/release/ecoop-artifact --datastore dataset export query-results/paper/commits.list                     query-results/paper/commits.csv
-parasite/target/release/ecoop-artifact --datastore dataset export query-results/paper/experienced_author.list          query-results/paper/experienced_author.csv
+parasite/target/release/ecoop-artifact --datastore dataset export query-results/paper/experienced_authors.list          query-results/paper/experienced_author.csv
 parasite/target/release/ecoop-artifact --datastore dataset export query-results/paper/experienced_authors_ratio.list   query-results/paper/experienced_authors_ratio.csv
 parasite/target/release/ecoop-artifact --datastore dataset export query-results/paper/mean_changes_in_commits.list     query-results/paper/mean_changes_in_commits.csv
 parasite/target/release/ecoop-artifact --datastore dataset export query-results/paper/median_commit_message_sizes.list query-results/paper/median_commit_message_sizes.csv
