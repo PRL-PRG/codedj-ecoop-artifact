@@ -18,6 +18,8 @@ snippets in the document.
 
 # Part 2.3. Case study: data analysis and graphs
 
+> Note that the graphs created in this section are very sensitive to the actual dataset and in cases to proper sampling used. By default, both have been substantially limited for the purpose of the artifact and therefore the obtained distributions and models might look quite different from the graphs published in the paper. This is not an error.
+
 Thie section prepares plots the graphs for Section 4 *A Case
 Study: Of Bugs and Languages* in the paper. The document contains a section 
 for each of the four plots in the paper and a section for preparing the data.
