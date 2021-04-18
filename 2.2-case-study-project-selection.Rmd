@@ -405,6 +405,7 @@ ours_fixed <- ours_fixed %>% filter(project %in% small_projects$project)
 
 for (i in 1:length(years)){
   cat(paste0(ys[i], "\n"))
+  dir.create(paste0(OUTPUT_DIR, ys[i]), recursive=TRUE)
   
   ye <- subset(ours_fixed, commit_date < years[i])
   X <- summarizeByLanguage(ye)
@@ -428,7 +429,6 @@ for (i in 1:length(years)){
     result
 
     # output results
-    dir.create(paste0(OUTPUT_DIR, ys[i]), recursive=TRUE)
     write.csv(result[c("coef", "pVal")], file = paste(paste(paste(paste(paste(OUTPUT_DIR, ys[i], sep = ''), '/', sep = ''), j, sep = ''), ys[i], sep =''), '_new.csv', sep = ''))  
   }
 }
