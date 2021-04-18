@@ -81,3 +81,13 @@ R -e 'install.packages(c("reticulate"))'
 sudo apt install python3 python-is-python3 python3-pip
 pip3 install jupyter numpy seaborn pandas
 ```
+
+```{r}
+library(reticulate)
+# Install any uninstalled Python packages for reticulate
+py_install("pandas")
+py_install("numpy")
+py_install("matplotlib")
+py_install("seaborn")
+```
+

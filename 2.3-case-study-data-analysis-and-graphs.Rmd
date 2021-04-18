@@ -39,6 +39,7 @@ All the graphs are generated in place in the Rmd file as well as PDFs in `/graph
 Load auxiliary functions and initialize log:
 
 ```{R}
+use_python("/usr/local/bin/python")
 knitr::knit_engines$set(python = reticulate::eng_python)
 source("scripts/implementation.R")
 initializeLog()
