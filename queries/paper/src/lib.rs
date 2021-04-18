@@ -42,7 +42,7 @@ pub fn experienced_author(database: &Database, _log: &Log, output: &Path) -> Res
         .sample(Distinct(Top(50), MinRatio(project::Commits, 0.9)))
         .ungroup()
         .map_into(project::Id)
-        .into_csv_in_dir(output, "experienced_author.list")       
+        .into_csv_in_dir(output, "experienced_authors.list")       
 }
 
 #[djanco(April, 2021, subset(Generic))]
