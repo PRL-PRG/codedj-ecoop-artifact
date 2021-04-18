@@ -75,6 +75,9 @@ datasets_raw <- list(
   commits = load_dataset(COMMITS),
   issues = load_dataset(ALL_ISSUES)
 )
+
+all_languages = read_delim(FSE_REFERENCE, delim=',', escape_double=FALSE, escape_backslash=TRUE, quote="\"")$X1
+all_languages = all_languages[-(1:5)]
 ```
 
 Now we fix the datasets, calculating the missing commit age and filtering small projects and small project-language pairs:
@@ -188,7 +191,7 @@ calculateModel = function(dataset, dataset_name) {
     result$name = as.factor(rownames(result))
     result$dataset = dataset_name
     result$signifficant = result$pVal <= 0.05 # orly? 
-    full_names = data.frame(name = as.factor(c("Intercept", "log age", "log size", "log devs", "log commits", levels(dataset$language))))
+    full_names = data.frame(name = as.factor(c("Intercept", "log age", "log devs", "log commits", all_languages)))
     result = left_join(full_names, result, by = c("name"))
     rownames(result) = full_names$name
     result
@@ -222,6 +225,8 @@ SAMPLES = 100
 
 import numpy as np
 import pandas as pd
+import matplotlib as mpl
+mpl.use('Agg')
 import matplotlib.pyplot as plt
 import seaborn as sns
 from matplotlib.colors import LogNorm
@@ -250,7 +255,7 @@ frames = []
 
 for i in range(1, SAMPLES + 1):
     temp = pd.read_csv(f'{r.MODEL_DIR}/ts_by_year/2020/{str(i)}2020_new.csv')
-    frames.append(temp[5:])
+    frames.append(temp[4:])
 
 ref = pd.read_csv(r.FSE_REFERENCE)[5:]
 ref['coef'] = ref_FSE
@@ -310,6 +315,8 @@ SAMPLES = 100
 
 import numpy as np
 import pandas as pd
+import matplotlib as mpl
+mpl.use('Agg')
 import matplotlib.pyplot as plt
 import seaborn as sns
 from matplotlib.colors import LogNorm
@@ -491,7 +498,7 @@ calculateModel = function(dataset, dataset_name) {
     result$name = as.factor(rownames(result))
     result$dataset = dataset_name
     result$signifficant = result$pVal <= 0.05 # orly? 
-    full_names = data.frame(name = as.factor(c("Intercept", "log age", "log size", "log devs", "log commits", levels(dataset$language))))
+    full_names = data.frame(name = as.factor(c("Intercept", "log age", "log devs", "log commits", all_languages)))
     result = left_join(full_names, result, by = c("name"))
     rownames(result) = full_names$name
     result
@@ -513,6 +520,8 @@ Use these models to create a graph:
 ```{python fig.width=24, fig.height:8}
 import numpy as np
 import pandas as pd
+import matplotlib as mpl
+mpl.use('Agg')
 import matplotlib.pyplot as plt
 import seaborn as sns
 import time
@@ -555,7 +564,7 @@ names = ['Stars',
 frames = []
 
 for f in files:
-    temp = pd.read_csv(r.MODEL_DIR + f)[5:]
+    temp = pd.read_csv(r.MODEL_DIR + f)[4:]
     print("temp")
     print(temp)
     frames.append(temp)
@@ -612,11 +621,12 @@ plt.ylabel('Coefficient')
 ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
 plt.xlim((-0.42, 16.43))
 
-print(handles)
-print(labels)
 
 handles, labels = ax.get_legend_handles_labels()
 ax.legend(handles[0:7], names[0:7], frameon=False, loc = "best") 
+
+print(handles)
+print(labels)
 
 for i in range(9):
     ax.axvspan(-0.4 + 2*i, 0.60 + 2*i, facecolor='gray', alpha=0.1)
