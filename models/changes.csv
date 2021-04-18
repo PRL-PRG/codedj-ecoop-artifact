@@ -1,7 +1,6 @@
 "","coef","pVal"
 "Intercept",-1.08,0.017
 "log age",-0.03,0.502
-"log size",-0.11,0.001
 "log devs",0.41,0
 "log commits",1.07,0
 "C",-0.05,0.868

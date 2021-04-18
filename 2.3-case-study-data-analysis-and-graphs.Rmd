@@ -549,17 +549,16 @@ plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
 from os import listdir
 from os.path import isfile, join
 
-files = [f for f in listdir(r.MODEL_DIR) if isfile(join(r.MODEL_DIR, f))]
-print(files)
+files = ['stars.csv', 'expr.csv', 'expa.csv', 'commits.csv', 'messages.csv', 'issues.csv', 'changes.csv']
 
-#names
 names = ['Stars',
-      'Touched Files',
       '50% Experienced',
       'Experienced Author',
-      'Message Size',
       'Number of Commits',
-      'Issues']
+      'Message Size',
+      'Issues',
+      'Touched Files'
+      ]
 
 frames = []
 
