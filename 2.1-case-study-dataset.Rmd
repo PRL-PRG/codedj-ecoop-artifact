@@ -30,7 +30,7 @@ GitHub URLs. We provide a pre-downloaded dataset at
 
 ```
 cd datasets
-wget https://147.32.233.132/codedj-artifact-ecoop21/dataset.tgz
+wget http://147.32.233.132/codedj-artifact-ecoop21/dataset.tgz
 tar -xvf dataset.tgz
 ```
 

@@ -131,7 +131,7 @@ To execute the queries on the dataset used in the paper run:
 
 ```{bash}
 cd queries/paper
-cargo run --bin djanco --release -- --dataset-path ../../dataset/paper --output-path ../../query-results/paper
+cargo run --bin djanco --release -- --dataset-path ../../datasets/dataset --output-path ../../query-results/paper
 cd .../..
 ```
 
