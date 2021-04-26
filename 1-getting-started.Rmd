@@ -1,7 +1,7 @@
 ~~~
 This is an R markdown document. It's like a markdown document, but has 
 executable snippets of code that do the work (in various languages, including
-bash, Python, R). It can be viewed using Rstudio---we recommend doing this.
+bash, Python, R). It can be viewed using RStudio---we recommend doing this.
 
     rstudio 1-getting-started.Rmd
 
@@ -12,27 +12,31 @@ It can also be executed (in whole) with R using the following bash snippet:*
 This will compile the document into HTML while executing all the code 
 snippets in the document.
 
-> This is a tutorial on how to use codedj from scratch, building your own dataset and runninhg own queries and does not have to be executed in order to simply reproduce the paper claims.
+This is a tutorial on how to use codedj from scratch, building your own dataset
+and running own queries and does not have to be executed in order to simply
+reproduce the paper claims.
 
 ~~~
 
 
 # Part 1: Getting started
 
-This part describes setting up the CodeDJ system from scratch, downloading a 
-dataset, and running a query. It is a tutorial for someone who is trying out getting their own dataset, and 
-writing their own queries. This part consists of the following sections:
+This part describes setting up the CodeDJ system from scratch, downloading a
+dataset, and running a query. It is a tutorial aimed at someone who is trying
+out getting their own dataset, and writing their own queries. This part
+consists of the following sections:
 
 - **Setup**---how to download and build the Parasite and Djanco,
-- **Skipping downloading**---how to use a pre-downloaded dataset without downloading anything,
+- **Skipping downloading**---how to use a pre-downloaded dataset without
+  downloading anything,
 - **Downloading a dataset**---how to download a dataset from scratch,
 - **Setting up a query**---how to create a Rust crate with Djanco queries,
 - **Running a query**---how to execute a Djanco query.
 
 ### Setup
 
-Djanco and Parasite are already isntalled in the artifact image but you can 
-download and build them Parasite using the following commands:
+Djanco and Parasite are already installed in the artifact image but you can 
+download and build them by using the following commands:
 
 ```{bash}
 rm -rf parasite
@@ -56,13 +60,13 @@ cd ..
 
 We explain how to download a small 10-project dataset using Parasite. 
 
-In order to download projects from GitHub Parasite requires the user have a 
-GitHub account and a personal access token. You can generate a token for your 
-GitHub account by following the instructions 
-[here](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token). 
+In order to download projects from GitHub, Parasite requires the user have a
+GitHub account and a personal access token. You can generate a token for your
+GitHub account by following the instructions
+[here](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token).
 The token does not need any scopes or permissions.
 
-To create a basic dataset, first create a directory that will contain the 
+To create a basic dataset, first create a directory that will contain the
 downloaded. Be aware that datasets tend to be large. 
 
 ```{bash}
@@ -71,8 +75,8 @@ mkdir -p datasets/toy-dataset/repo_clones
 ```
 
 Next, specify the list of repositories to include in the dataset in a CSV file.
- The toy dataset will contain the following 10 repositories (4 Python, 4 
- JavaScript, and 2 TypeScript repositories):
+The toy dataset will contain the following 10 repositories (4 Python, 4
+JavaScript, and 2 TypeScript repositories):
 
 ```
 repository
@@ -96,11 +100,11 @@ Then, feed the list of repositories to Parasite:
 parasite/target/release/parasite --datastore datasets/toy-dataset add datasets/toy-dataset-repositories.csv
 ```
 
-Next, create a CSV file containing one of more 
-[GitHub personal access tokens](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token). 
-No special scopes or permissions are needed on the token. These are used to 
-download data using the GitHub REST API and are essential for the downloader
-to work.
+Next, create a CSV file containing one of more [GitHub personal access
+tokens](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token).
+No special scopes or permissions are needed on the token. These are used to
+download data using the GitHub REST API and are essential for the downloader to
+work.
 
 ```
 token
@@ -108,7 +112,7 @@ fa56454....
 ```
 
 We cannot provide a file with these for presentation purposes. We assume the
-reader prepares their own token file in the current directory at 
+reader prepares their own token file in the current directory at
 `ghtokens.csv`.
 
 The next step is to enter interactive console in Parasite. Provide a path to
@@ -119,7 +123,8 @@ threads that the downloader will use with the n flag (here we use 8).
 parasite/target/release/parasite --datastore datasets/toy-dataset -ght ghtokens.csv -n 8 --interactive
 ```
 
-(This executes the command in a new terminal, so it's possible to run in from inside RStudio)
+(This executes the command in a new terminal, so it's possible to run in from
+inside RStudio)
 
 ```{bash}
 gnome-terminal -e "parasite/target/release/parasite --datastore datasets/toy-dataset -ght ghtokens.csv -n 8 --interactive"
@@ -136,7 +141,7 @@ loadall
 
 ![](img/loadall.png)
 
-Then, also in *interactive* console: execute `updateall` to start the
+Then, also in *interactive* console, execute `updateall` to start the
 downloader. This will cause Parasite to download, process and store information
 about each added repository using 8 threads.
 
@@ -157,7 +162,14 @@ one can create a cargo crate from scratch. We only present the former here.
 A pre-generated instance of the crate generated by this process is included in
 `queries/my-query-crate`. 
 
-Optionally generate a cargo crate from a template we provide (remove pre-existing crate):
+Optionally you can re-generate this cargo crate. To do this, the `generate`
+command must be installed in `cargo`:
+
+```{bash}
+cargo install cargo-generate
+```
+
+Then, generate a new cargo crate from a template (remove the pre-existing crate):
 
 ```{bash}
 cd queries 
@@ -201,7 +213,14 @@ pub fn my_query(database: &Database, _log: &Log, output: &Path) -> Result<(), st
 }
 ```
 
-Generate a run script for the queries:
+The next step is to generate a run script for the queries. This requires that
+the `djanco` command be installed in `cargo`:
+
+```
+cargo install --git https://github.com/PRL-PRG/cargo-djanco
+```
+
+Then, generate a run script:
 
 ```{bash}
 cd queries/my-query-crate
@@ -209,8 +228,8 @@ cargo djanco
 cd ../..
 ```
 
-This generates a rust program at location `src/bin/djanco.rs` that initializes
-the dataset and runs all functions in the crate that are tagged as 
+This generates a Rust program at location `src/bin/djanco.rs` that initializes
+the dataset and runs all functions in the crate that are tagged as
 `#[djanco(...)]`. 
 
 ### Running the query
@@ -231,8 +250,9 @@ cargo run --release --bin djanco -- --dataset-path ../../datasets/toy-dataset --
 cd ..
 ```
 
-After the query is executed, the results of the query will be available at 
-`query-results/getting-started/top_1_project_by_stars_in_each_language.csv` [truncated]:
+After the query is executed, the results of the query will be available at
+`query-results/getting-started/top_1_project_by_stars_in_each_language.csv`
+[truncated]:
 
 ```
 language,project_id,substore,url, [...] ,stars, ...
@@ -241,8 +261,8 @@ TypeScript,2,TypeScript,https://github.com/angular/angular.git, [...] ,72384, [.
 Python,8,Python,https://github.com/3b1b/manim.git, [...] ,32791, [...]
 ```
 
-We attach a pregenerated instance of the output of this query at 
-`query-results/getting-started/pregenerated-top_1_project_by_stars_in_each_language.csv`. 
-Note that the values of attributes will have changed over time and the downloader will
-acquire the most recent values---preserving historical data requires
-updating a dataset over time.
+We attach a pre-generated instance of the output of this query at
+`query-results/getting-started/pregenerated-top_1_project_by_stars_in_each_language.csv`.
+Note that the values of attributes will have changed over time and the
+downloader will acquire the most recent values---preserving historical data
+requires updating a dataset over time.

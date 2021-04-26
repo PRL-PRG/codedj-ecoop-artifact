@@ -1,7 +1,7 @@
 ~~~
 This is an R markdown document. It's like a markdown document, but has 
 executable snippets of code that do the work (in various languages, including
-bash, Python, R). It can be viewed using Rstudio---we recommend doing this.
+bash, Python, R). It can be viewed using RStudio---we recommend doing this.
 
     rstudio 0-prerequisites.Rmd
 

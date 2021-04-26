@@ -3,7 +3,7 @@ NOTE
 
 This is an R markdown document. It's like a markdown document, but has 
 executable snippets of code that do the work (in various languages, including
-bash, Python, R). It can be viewed using Rstudio---we recommend doing this.
+bash, Python, R). It can be viewed using RStudio---we recommend doing this.
 
     rstudio 2.2-case-study-project-selection.Rmd
 
@@ -21,27 +21,28 @@ This is the root document of the artifact. Start reading here.
 
 There are 7 project selection queries in the paper:
 
-* Stars: Pick projects with most stars. Rationale: starred projects are 
+* *Stars*: Pick projects with most stars. Rationale: starred projects are
   popular and thus likely to be well written and maintained. 
-* Touched Files: compute #files changed by commits, pick projects that
-  changed the most files. Rationale: indicative of projects where commits 
+* *Touched Files*: compute #files changed by commits, pick projects that
+  changed the most files. Rationale: indicative of projects where commits
   represent larger units of work.
-* Experienced Author: experienced developers are those on GitHub for at 
-  least two years; pick a sample of projects with at least one experienced 
+* *Experienced Author*: experienced developers are those on GitHub for at least
+  two years; pick a sample of projects with at least one experienced
   contributor. Rationale: less likely to be throw-away projects.
-* 50% Experienced: projects with two or more developers, half of which 
+* *50% Experienced*: projects with two or more developers, half of which 
   experienced. Rationale: focus on larger teams.
-* Message Size: Compute size in bytes of commit messages; pick projects 
-  with the largest size. Rationale: empty or trivial commit messages 
-  indicate uninteresting projects.
-* Number of Commits: Compute the number of commits; pick projects with the 
+* *Message Size*: Compute size in bytes of commit messages; pick projects with
+  the largest size. Rationale: empty or trivial commit messages indicate
+  uninteresting projects.
+* *Number of Commits*: Compute the number of commits; pick projects with the
   most commits. Rationale: larger projects are more mature.
-* Issues: Pick projects with the most issues. Rationale: issues indicate 
-  a more structured development process.
+* *Issues*: Pick projects with the most issues. Rationale: issues indicate a
+  more structured development process.
 
 ## Query semantics  
 
-The queries are written using the Djanco DSL. Here are the relevant snippets for each query:
+The queries are written using the Djanco DSL. Here are the relevant snippets
+for each query:
 
 Stars:
 ```rust
@@ -104,20 +105,21 @@ database.projects()
 }
 ```
 
-All the queries are collected into a Rust crate in directory 
-`queries/paper`. This crate was created by the same
-procedure as presented in Part 1 of this document. The source code of all
-the queries can be found in `queries/paper/src/lib.rs` and can be executed 
-by running `queries/paper/src/bin/djanco.rs`.
+All the queries are collected into a Rust crate in the directory
+`queries/paper`. This crate was created by the same procedure as presented in
+Part 1 of this document. The source code of all the queries can be found in
+`queries/paper/src/lib.rs` and can be executed by running
+`queries/paper/src/bin/djanco.rs`.
 
 ## Dataset
 
-The whole process of project selection requires the dataset to be downloaded. 
-In order to run the queries the reader must put in place the dataset used in the paper as described in:
+The whole process of project selection requires the dataset to be downloaded.
+In order to run the queries the reader must put in place the dataset used in
+the paper as described in:
 
 [2.1-case-study-dataset.Rmd](2.1-case-study-dataset.Rmd)
 
-## Running the queries and postprocessing
+## Running the queries and post-processing
 
 The project selection then runs on the dataset---this can take a long time: hours 
 or tens of hours depending on hardware. After the queries are executed the results 
@@ -147,16 +149,17 @@ query-results/paper/
 └── stars.list
 ```
 
-Each file is actually a CSV file. It contains a single column: `project_id`. 
-The column contains the ID of the project in the dataset. Since this is not 
-a very helpful representation, the selection is then post-processed to be 
-useful for the analyses in the paper.
+Each file is actually a CSV file. It contains a single column: `project_id`.
+The column contains the ID of the project in the dataset. Since this is not a
+very helpful representation, the selection is then post-processed to be useful
+for the analyses in the paper.
 
 ### Preprocessing 1: commit
  
-Convert the results of the queries into a format that can be used for further analysis.
-First, we generate data about commits in each of the selected projects. We also generate
-a summary for the entire dataset along similar lines.
+Convert the results of the queries into a format that can be used for further
+analysis.  First, we generate data about commits in each of the selected
+projects. We also generate a summary for the entire dataset along similar
+lines.
 
 ```{bash}
 parasite/target/release/ecoop-artifact --datastore datasets/dataset export query-results/paper/stars.list                       query-results/paper/stars.csv
@@ -169,7 +172,7 @@ parasite/target/release/ecoop-artifact --datastore datasets/dataset export query
 parasite/target/release/ecoop-artifact --datastore datasets/dataset export --all                                                query-results/paper/full_dataset.csv
 ```
 
-Thie produces the following file tree in the `query-results/paper` directory:
+This produces the following file tree in the `query-results/paper` directory:
 
 ```
 query-results/paper/
@@ -210,13 +213,15 @@ The generated CSV files contain the following columns:
 - btype1,
 - btype2
 
-The format is this complicated because of compatibility with the study in the FSE2014 paper, 
-however, for the purposes of the current work, we only require some of these columns. 
-We do not populate columns we do not need. We indicate populated columns in bold.
+The format is complicated because of a holdover from compatibility with the
+study in the FSE2014 paper, however, for the purposes of the current work, we
+only require some of these columns.  We do not populate columns we do not need.
+We indicate populated columns in bold.
 
 ### Preprocessing 2: summaries
 
-Then, prepare a set of results containing summaries of key characteristics of each project and languages within each projects:
+Then, prepare a set of results containing summaries of key characteristics of
+each project and languages within each projects:
 
 ```{bash}
 parasite/target/release/ecoop-artifact --datastore datasets/dataset compact query-results/paper/stars.csv                       query-results/paper/stars_p.csv                       query-results/paper/stars_pl.csv      
@@ -259,7 +264,8 @@ query-results/paper/
 └── stars_pl.csv
 ```
 
-The generated files marked `_p` are summaries of projects and contain the following columns:
+The generated files marked `_p` are summaries of projects and contain the
+following columns:
 
 - project,
 - languages,
@@ -270,7 +276,8 @@ The generated files marked `_p` are summaries of projects and contain the follow
 - age.
 
 
-The files marked `_pl` are summeries of languages within projects and contain the following columns:
+The files marked `_pl` are summaries of languages within projects and contain
+the following columns:
 
 - project,
 - language,
@@ -284,10 +291,12 @@ The files marked `_pl` are summeries of languages within projects and contain th
 
 ### Preprocessing 3: TypeScript analysis
 
-The last post-processing step generates samples for an overview of TypeScript over a period of several years. This is done in R.
+The last post-processing step generates samples for an overview of TypeScript
+over a period of several years. This is done in R.
 
-This step takes multiple hours. The execution time can be shortened by lowering the number of samples extracted from 
-the data in each year. Change the number in the code snippet below and run it to adjust the sampling rate.
+This step takes multiple hours. The execution time can be shortened by lowering
+the number of samples extracted from the data in each year. Change the number
+in the code snippet below and run it to adjust the sampling rate.
 
 ```{r}
 SAMPLES_PER_YEAR <- 100
@@ -434,4 +443,5 @@ for (i in 1:length(years)){
 }
 ```
 
-The script generates a directory for each sampled year. Each directory contains a CSV file per sample.
+The script generates a directory for each sampled year. Each directory contains
+a CSV file per sample.

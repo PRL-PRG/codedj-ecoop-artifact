@@ -19,13 +19,14 @@ This is the root document of the artifact. Start reading here.
 
 # Part 2.1. Case study: dataset
 
-Prepares the data and plots the graphs for Section 4 *A Case
-Study: Of Bugs and Languages* in ther paper. This requires downloading the
-data, performing the queries, and processing the results.
+Prepares the data and plots the graphs for Section 4 *A Case Study: Of Bugs and
+Languages* in the paper. This requires downloading the data, performing the
+queries, and processing the results.
 
 The dataset used in the analysis in the paper is constructed by downloading the
-repositories listed in `paper-dataset-repositories.csv` containing 229,933 
-GitHub URLs. We provide a pre-downloaded dataset at `https://147.32.233.132/codedj-artifact-ecoop21/dataset.tgz`:
+repositories listed in `paper-dataset-repositories.csv` containing 229,933
+GitHub URLs. We provide a pre-downloaded dataset at
+`https://147.32.233.132/codedj-artifact-ecoop21/dataset.tgz`:
 
 ```
 cd datasets
@@ -34,9 +35,9 @@ tar -xvf dataset.tgz
 ```
 
 > We do not recommend downloading it yourself since it will take a significant
-amount of time (days) and disk space (hundreds of gigabytes). Nevertheless, you can. You require a
-`ghtokens.csv` file containing at least one valid github personal access
-token.
+amount of time (days) and disk space (hundreds of gigabytes). Nevertheless, you
+can. You require a `ghtokens.csv` file containing at least one valid GitHub
+personal access token.
 
 ```
 token

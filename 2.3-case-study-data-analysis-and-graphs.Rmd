@@ -3,7 +3,7 @@ NOTE
 
 This is an R markdown document. It's like a markdown document, but has 
 executable snippets of code that do the work (in various languages, including
-bash, Python, R). It can be viewed using Rstudio---we recommend doing this.
+bash, Python, R). It can be viewed using RStudio---we recommend doing this.
 
     rstudio 2.3-case-study-data-analysis-and-graphs
 
@@ -18,11 +18,15 @@ snippets in the document.
 
 # Part 2.3. Case study: data analysis and graphs
 
-> Note that the graphs created in this section are very sensitive to the actual dataset and in cases to proper sampling used. By default, both have been substantially limited for the purpose of the artifact and therefore the obtained distributions and models might look quite different from the graphs published in the paper. This is not an error.
+> Note that the graphs created in this section are very sensitive to the actual
+> dataset and in cases to proper sampling used. By default, both have been
+> substantially limited for the purpose of the artifact and therefore the
+> obtained distributions and models might look quite different from the graphs
+> published in the paper. This is not an error.
 
-Thie section prepares plots the graphs for Section 4 *A Case
-Study: Of Bugs and Languages* in the paper. The document contains a section 
-for each of the four plots in the paper and a section for preparing the data.
+This section prepares plots the graphs for Section 4 *A Case Study: Of Bugs and
+Languages* in the paper. The document contains a section for each of the four
+plots in the paper and a section for preparing the data.
 
 - Preparation
 - Random subsets (Fig. 4)
@@ -30,11 +34,12 @@ for each of the four plots in the paper and a section for preparing the data.
 - Domain knowledge (Fig. 6)
 - Domain knowledge (Fig. 7)
 
-The graphs can be generated in any order, but all of them depend on the preparation 
-section having been executed. Scripts in this section do not download anything 
-and run in reasonable times. 
+The graphs can be generated in any order, but all of them depend on the
+preparation section having been executed. Scripts in this section do not
+download anything and run in reasonable times. 
 
-All the graphs are generated in place in the Rmd file as well as PDFs in `/graphs`.
+All the graphs are generated in place in the RMD file as well as into PDFs in
+`/graphs`.
 
 ## Preparation 
 
@@ -82,7 +87,8 @@ all_languages = read_delim(FSE_REFERENCE, delim=',', escape_double=FALSE, escape
 all_languages = all_languages[-(1:5)]
 ```
 
-Now we fix the datasets, calculating the missing commit age and filtering small projects and small project-language pairs:
+Now we fix the datasets, calculating the missing commit age and filtering small
+projects and small project-language pairs:
 
 ```{r}
 fix_dataset = function(dataset, dataset_name) {
@@ -104,7 +110,7 @@ fix_dataset = function(dataset, dataset_name) {
 datasets = Map(fix_dataset, datasets_raw, names(datasets_raw))
 ```
 
-Calculate the coefficients for various languages.
+Calculate the coefficients for various languages:
 
 ```{r}
 summarizeByLanguage = function(what) {
@@ -205,22 +211,25 @@ Map(function(model, name) {write.csv(model %>% dplyr::select(coef, pVal), paste0
 
 #### Random subsets
 
-Our first experiment explores the distribution of possible analysis outcomes. For this, we
-repeatedly pick a random subset of 50 projects of each of the 17 languages and fit them with
-NBR. Fig 4 shows the distribution of the coefficients obtained by 1000 such random selections
-compared to the results obtained in [FSE2014] (shown as a tick to the right of the distribution).
+Our first experiment explores the distribution of possible analysis outcomes.
+For this, we repeatedly pick a random subset of 50 projects of each of the 17
+languages and fit them with NBR. Fig 4 shows the distribution of the
+coefficients obtained by 1000 such random selections compared to the results
+obtained in [FSE2014] (shown as a tick to the right of the distribution).
 Positive values indicate a higher association of the language with defects.
-The spread of each distribution is a measure of the sensitivity of the analysis to its inputs.
-Intuitively, consider the distribution of coefficients for Objective-C, it is roughly centered
-around 0. This means, that a random input is about equally likely to say that the language
-has a positive association with defects as a negative one. One could argue that picking close
-to the median of the distribution could give a representative answer. As we can see the FSE
-paper often picks subsets that are outliers; see the cases of CoffeeScript, Go, Perl, Scala and
-most strikingly TypeScript.
+The spread of each distribution is a measure of the sensitivity of the analysis
+to its inputs.  Intuitively, consider the distribution of coefficients for
+Objective-C, it is roughly centered around 0. This means, that a random input
+is about equally likely to say that the language has a positive association
+with defects as a negative one. One could argue that picking close to the
+median of the distribution could give a representative answer. As we can see
+the FSE paper often picks subsets that are outliers; see the cases of
+CoffeeScript, Go, Perl, Scala and most strikingly TypeScript.
 
-Please note that the number of samples used for generating the graph should not be larger than 
-the number of samples generated during post-processing the dataset (10000 by default). Also note 
-that the more samples are used, the slower the processing becomes.
+Please note that the number of samples used for generating the graph should not
+be larger than the number of samples generated during post-processing the
+dataset (10000 by default). Also note that the more samples are used, the
+slower the processing becomes.
 
 ```{python, fig.width=14, fig.height=8}
 SAMPLES = 100
@@ -294,22 +303,25 @@ plt.show()
 
 #### TypeScript over time
 
-As we have more data than was available in 2013, we can use Code DJ to select inputs at
-various times. Here we create eight datasets, each containing data up to one of the years
-between 2013 and 2020. For simplicity, we only plot the distribution of coefficients for
-TypeScript. The original paper’s coefficient was −.43 (shown as a red line). The graph
-clearly shows that the value was an outlier. The association with bugs shifted over time,
-increasing to a relatively stable position from 2016.
+As we have more data than was available in 2013, we can use Code DJ to select
+inputs at various times. Here we create eight datasets, each containing data up
+to one of the years between 2013 and 2020. For simplicity, we only plot the
+distribution of coefficients for TypeScript. The original paper’s coefficient
+was −.43 (shown as a red line). The graph clearly shows that the value was an
+outlier. The association with bugs shifted over time, increasing to a
+relatively stable position from 2016.
 
-While it is reasonable to expect variations from year to year, TypeScript experienced a
-rather large shift over a short period. The language was released in 2012, so there were few
-projects on GitHub in 2013. Furthermore, a number of human language translation files
-were misidentified as TypeScript; these files did not have bugs, biasing the result. The rising
-popularity of TypeScript quickly caused real code to crowd out the translation files, and the
+While it is reasonable to expect variations from year to year, TypeScript
+experienced a rather large shift over a short period. The language was released
+in 2012, so there were few projects on GitHub in 2013. Furthermore, a number of
+human language translation files were misidentified as TypeScript; these files
+did not have bugs, biasing the result. The rising popularity of TypeScript
+quickly caused real code to crowd out the translation files, and the
 association with bugs settled to around 0.2.
 
-Please note that the number of samples used for generating the graph should not be larger than 
-the number of samples generated during post-processing the dataset (100 for the artifact, but 10000 was used for the paper). Also note 
+Please note that the number of samples used for generating the graph should not
+be larger than the number of samples generated during post-processing the
+dataset (100 for the artifact, but 10000 was used for the paper). Also note
 that the more samples are used, the slower the processing becomes.
 
 ```{python, fig.width=14, fig.height=8}
@@ -399,19 +411,20 @@ plt.show()
 
 #### Domain knowledge
 
-Creates a figure that, for each language, calculates the value of the 
-coefficients (higher means more bugs); the queries returned 50 projects in 
-each of the 17 target languages: Coefficients that are not statistically 
-significant are shown in faded colors. If the input set did not matter for the
-model, one could expect the different queries to give roughly the same 
-coefficients with the same significance. This is not the case. If we focus on how many languages have
-statistically significant coefficients: The touched files query is highly predictive, 14 of the
-languages are significant, but the coefficients are frequently opposite from those of other
-queries. Specifically, C is associated with slightly fewer bugs, so are C#, CoffeeScript, Java,
-JavaScript, Objective-C, Perl, PHP, Python, Ruby and TypeScript. On the other hand C++,
-Erlang, Go and Haskell are associated with more defects. This is striking as it goes against
-expectations. The stars query is the least informative. It only gives 7 statistically significant
-coefficients with remarkably low values.
+Creates a figure that, for each language, calculates the value of the
+coefficients (higher means more bugs); the queries returned 50 projects in each
+of the 17 target languages: Coefficients that are not statistically significant
+are shown in faded colors. If the input set did not matter for the model, one
+could expect the different queries to give roughly the same coefficients with
+the same significance. This is not the case. If we focus on how many languages
+have statistically significant coefficients: The touched files query is highly
+predictive, 14 of the languages are significant, but the coefficients are
+frequently opposite from those of other queries. Specifically, C is associated
+with slightly fewer bugs, so are C#, CoffeeScript, Java, JavaScript,
+Objective-C, Perl, PHP, Python, Ruby and TypeScript. On the other hand C++,
+Erlang, Go and Haskell are associated with more defects. This is striking as it
+goes against expectations. The stars query is the least informative. It only
+gives 7 statistically significant coefficients with remarkably low values.
 
 ```{r}
 summarizeByLanguage = function(what) {
@@ -643,20 +656,23 @@ The plot is created in `graphs/fig6_domain_knowledge.pdf`.
 
 ### Project Size and Age Distributions
 
-To help, the paper provides distributions of
-various measures in the data. This figure visualizes the distribution of project sizes (left) and
-project age (right) for the entire dataset and for the all the queries queries.
+To help, the paper provides distributions of various measures in the data. This
+figure visualizes the distribution of project sizes (left) and project age
+(right) for the entire dataset and for the all the queries queries.
 
-Looking at these distributions makes it clear that the projects returned by various queries
-are quite different in character. The experienced author and the number of commits are
-remarkably similar and return projects that meet our expectations. The issues distribution
-is similar, which should raise red flags given that it frequently disagrees. The stars query
-returns many smaller projects. Finally, message sizes and touched files show distributions
-opposite to those expected. They favor degenerate young projects with few commits that are
-either verbose, or disproportionately large (touching over 100k files). This is reflected also in
-the input sizes, ranging from 8M rows for the experienced author query to mere 79K rows of
-the touched files query. It is likely that these queries are “wrong” in the sense they do not
-return the population of interest. The Figure also suggest that stars is not a good choice.
+Looking at these distributions makes it clear that the projects returned by
+various queries are quite different in character. The experienced author and
+the number of commits are remarkably similar and return projects that meet our
+expectations. The issues distribution is similar, which should raise red flags
+given that it frequently disagrees. The stars query returns many smaller
+projects. Finally, message sizes and touched files show distributions opposite
+to those expected. They favor degenerate young projects with few commits that
+are either verbose, or disproportionately large (touching over 100k files).
+This is reflected also in the input sizes, ranging from 8M rows for the
+experienced author query to mere 79K rows of the touched files query. It is
+likely that these queries are “wrong” in the sense they do not return the
+population of interest. The Figure also suggest that stars is not a good
+choice.
 
 ```{python fig.width=14, fig.height:9}
 import numpy as np

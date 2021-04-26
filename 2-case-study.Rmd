@@ -1,7 +1,7 @@
 ~~~
 This is an R markdown document. It's like a markdown document, but has 
 executable snippets of code that do the work (in various languages, including
-bash, Python, R). It can be viewed using Rstudio---we recommend doing this.
+bash, Python, R). It can be viewed using RStudio---we recommend doing this.
 
     rstudio 2-case-study.Rmd
 
@@ -15,10 +15,11 @@ snippets in the document.
 
 # Part 2. Case study: of bugs and languages
 
-The paper's motivation is the claim that the selection of inputs matters in empirical studies
-of software and that Code DJ can assist researchers in that process. We illustrate these points
-with a case study. We start from prior work, and show that input selection impacts scientific
-claims, and that Code DJ allows rapid exploration of the input space.
+The paper's motivation is the claim that the selection of inputs matters in
+empirical studies of software and that Code DJ can assist researchers in that
+process. We illustrate these points with a case study. We start from prior
+work, and show that input selection impacts scientific claims, and that Code DJ
+allows rapid exploration of the input space.
 
 This section of the artifact aims to replicate the case study in three parts:
 
@@ -27,35 +28,38 @@ This section of the artifact aims to replicate the case study in three parts:
 - perform project selection for the queries in the paper,
 - perform experiments from the paper.
 
-The stages are described below and details for re-running them are provided in separate Rmd files.
+The stages are described below and details for re-running them are provided in
+separate RMD files.
 
 #### Background
 
-The work’s motivation is the claim that the selection of inputs matters in empirical studies
-of software and that Code DJ can assist researchers in that process. We illustrate these points
-with a case study. We start from prior work, and show that input selection impacts scientific
-claims, and that Code DJ allows rapid exploration of the input space.
+The work’s motivation is the claim that the selection of inputs matters in
+empirical studies of software and that Code DJ can assist researchers in that
+process. We illustrate these points with a case study. We start from prior
+work, and show that input selection impacts scientific claims, and that Code DJ
+allows rapid exploration of the input space.
 
 The starting point is an FSE 2014 paper:
 
-Baishakhi Ray, Daryl Posnett, Vladimir Filkov, and Premkumar Devanbu. *A large scale
-study of programming languages and code quality in GitHub*. In International Symposium on
-Foundations of Software Engineering (FSE), 2014. 
+Baishakhi Ray, Daryl Posnett, Vladimir Filkov, and Premkumar Devanbu. *A large
+scale study of programming languages and code quality in GitHub*. In
+International Symposium on Foundations of Software Engineering (FSE), 2014.
 ![doi:10.1145/2635868.2635922](doi:10.1145/2635868.2635922).
 
-One contribution of the work is to establish
-that some programming languages have a greater association with defects than others (RQ1). 
-The methodology followed there can be summarized as follows. For 17 popular
-languages, select 50 projects hosted on GitHub that have at least 28 commits. For each
-commit touching a file that contains code in one of the target languages, label the commit as
-bug-fixing if its message contains a bug-related keyword. Fit a Negative Binomial Regression
-(NBR) against the labeled data and obtain, for each language, a coefficient and a p-value.
-The coefficient indicates the strength of the association (positive means more bugs), and the
-p-value tells us about statistical significance (less than .05 means the coefficient is significant).
-The FSE 2014 paper concluded that TypeScript, Clojure, Haskell, Ruby and Scala were
-associated with fewer bugs, while C, C++, Objective-C, JavaScript, PHP and Python were
-associated with more bugs. The remaining languages did not have statistically significant
-coefficients. 
+One contribution of the work is to establish that some programming languages
+have a greater association with defects than others (RQ1).  The methodology
+followed there can be summarized as follows. For 17 popular languages, select
+50 projects hosted on GitHub that have at least 28 commits. For each commit
+touching a file that contains code in one of the target languages, label the
+commit as bug-fixing if its message contains a bug-related keyword. Fit a
+Negative Binomial Regression (NBR) against the labeled data and obtain, for
+each language, a coefficient and a p-value.  The coefficient indicates the
+strength of the association (positive means more bugs), and the p-value tells
+us about statistical significance (less than .05 means the coefficient is
+significant).  The FSE 2014 paper concluded that TypeScript, Clojure, Haskell,
+Ruby and Scala were associated with fewer bugs, while C, C++, Objective-C,
+JavaScript, PHP and Python were associated with more bugs. The remaining
+languages did not have statistically significant coefficients. 
 
 Our first experiment explores the distribution of possible analysis outcomes. 
 
@@ -64,54 +68,62 @@ Our first experiment explores the distribution of possible analysis outcomes.
 This stage downloads the dataset used to perform the study. 
 
 The dataset used in the analysis in the paper is constructed by downloading the
-repositories listed in `paper-dataset-repositories.csv` containing 230K
-GitHub URLs. The downloaded dataset takes up 36GB on disk and contains ~230K 
-projects and 47M unique commits.
+repositories listed in `paper-dataset-repositories.csv` containing 230K GitHub
+URLs. The downloaded dataset takes up 36GB on disk and contains ~230K projects
+and 47M unique commits.
 
-The dataset itself is not strictly necessary to run the remainder of the case study, 
-so getting it is optional.
+The dataset itself is not strictly necessary to run the remainder of the case
+study, so getting it is optional.
 
-The following document provides instructions on how to either download the pre-constructed 
-dataset from our servers or to construct one from scratch.
+The following document provides instructions on how to either download the
+pre-constructed dataset from our servers or to construct one from scratch.
 
 [2.1-case-study-dataset.Rmd](2.1-case-study-dataset.Rmd)
 
 ### A note on development history of Parasite and Djanco
 
-The system used for the study in the paper has undergone development since the paper was submitted. 
-We converted the original dataset to the new format rather than re-downloading it.
-The current dataset (described in the paper) collects slightly different data from different sources: 
+The system used for the study in the paper has undergone development since the
+paper was submitted.  We converted the original dataset to the new format
+rather than re-downloading it.  The current dataset (described in the paper)
+collects slightly different data from different sources: 
 
-The **original** dataset was seeded with data from GHTorrent: commits, star counts and issue information. We found this 
-data to be very rough (big differences from values seen on GitHub, not present for all projects), so our current version 
-of the downloader ditches GHTorrent in favor of downloading project metadata using the GitHub API and provides different 
-metadata for projects.
+The **original** dataset was seeded with data from GHTorrent: commits, star
+counts and issue information. We found this data to be very rough (big
+differences from values seen on GitHub, not present for all projects), so our
+current version of the downloader ditches GHTorrent in favor of downloading
+project metadata using the GitHub API and provides different metadata for
+projects.
 
-The **current** version has new attributes that the old version did not have. On the other hand, the current version does 
-not retrieve issues counts because they are very uneconomical to obtain via the GitHub API.
+The **current** version has new attributes that the old version did not have.
+On the other hand, the current version does not retrieve issues counts because
+they are very uneconomical to obtain via the GitHub API.
 
-This has a few implications for the artifact: The converted dataset has many empty project attributes that the original
-dataset did not collect: `IsFork`, `IsArchived`, `IsDisabled`, `Watchers`, `Open_issues`, `Forks`, `Subscribers`,
-`HasIssues`, `HasDownloads`, `HasWiki`, `HasPages`, `DefaultBranch`, `License`, `Homepage`, and `Description`.
-If the reader writes their own queries using these attributes and  the provided dataset, these will be empty. 
-If the dataset were to be updated, or redownloaded from scratch, it will contain 
-these, but not `Issues`, `BuggyIssues` and `AllIssues`,
-which we have retained during the conversion. 
+This has a few implications for the artifact: The converted dataset has many
+empty project attributes that the original dataset did not collect: `IsFork`,
+`IsArchived`, `IsDisabled`, `Watchers`, `Open_issues`, `Forks`, `Subscribers`,
+`HasIssues`, `HasDownloads`, `HasWiki`, `HasPages`, `DefaultBranch`, `License`,
+`Homepage`, and `Description`.  If the reader writes their own queries using
+these attributes and  the provided dataset, these will be empty.  If the
+dataset were to be updated, or redownloaded from scratch, it will contain
+these, but not `Issues`, `BuggyIssues` and `AllIssues`, which we have retained
+during the conversion. 
 
-The current dataset stores entities more efficiently in terms of disk space: it takes up 36GB on disk,
-rather than 51GB as mentioned in the original versionof the paper. This will be fixed in the camera ready version.
+The current dataset stores entities more efficiently in terms of disk space: it
+takes up 36GB on disk, rather than 51GB as mentioned in the original version of
+the paper. This will be fixed in the camera ready version.
 
 ## Perform project selection for the queries in the paper
 
-Choosing any subset of a larger population introduces bias, but this may be intentional,
-reflecting domain knowledge about the relative importance of observations. For instance,
-small projects with few commits may be less interesting as they correlate with student
-projects. These projects have fewer descriptive commit messages and their defects reflect
-beginner mistakes. It stands to reason to exclude such projects from consideration. Justifying
-the choice of any particular selection criterion is beyond the scope of our work. What Code DJ
-can do is let researchers explore the impact of various subsets their criteria produce. The
-experiment in the paper looks at several different criteria for selecting projects based on 
-popularity:
+Choosing any subset of a larger population introduces bias, but this may be
+intentional, reflecting domain knowledge about the relative importance of
+observations. For instance, small projects with few commits may be less
+interesting as they correlate with student projects. These projects have fewer
+descriptive commit messages and their defects reflect beginner mistakes. It
+stands to reason to exclude such projects from consideration. Justifying the
+choice of any particular selection criterion is beyond the scope of our work.
+What Code DJ can do is let researchers explore the impact of various subsets
+their criteria produce. The experiment in the paper looks at several different
+criteria for selecting projects based on popularity:
 
 * **Stars:** Pick projects with most stars. Rationale: starred projects are 
   popular and thus likely to be well written and maintained. 
@@ -131,27 +143,27 @@ popularity:
 * **Issues:** Pick projects with the most issues. Rationale: issues indicate 
   a more structured development process.
 
-The following document provides instructions on how execute the queries on the 
+The following document provides instructions on how execute the queries on the
 dataset. This step also post-processes the data and creates. 
 
 [2.2-case-study-project-selection.Rmd](2.2-case-study-project-selection.Rmd)
 
-The queries take a long time to execute on our relatively beefy rig (hours) and are very 
-hard to execute on laptops and desktops within reasonable time. If the reader does not 
-wish to re-execute them (or to download the full dataset) they can be skipped. We provide the 
-results of the queries in `query-results`.
+The queries take a long time to execute on our relatively beefy rig (hours) and
+are very hard to execute on laptops and desktops within reasonable time. If the
+reader does not wish to re-execute them (or to download the full dataset) they
+can be skipped. We provide the results of the queries in `query-results`.
 
-The queries each create a file containing project IDs of projects in the dataset and 
-a csv file containing summary information about each project.
+The queries each create a file containing project IDs of projects in the
+dataset and a CSV file containing summary information about each project.
 
 ### Perform experiments from the paper
 
 This section processes the results from the previous sections and generates
-figures. Additional data is attached to the project list from the dataset. 
-Then, data is processd and analyzed using R. The final part of the analysis and
-graph generation is done in Python. 
+figures. Additional data is attached to the project list from the dataset.
+Then, data is processed and analyzed using R. The final part of the analysis
+and graph generation is done in Python. 
 
-All the code snipepts are embedded in this Rmd file and are one-click
+All the code snippets are embedded in this RMD file and are one-click
 executable from RStudio.
 
 The following experiments are discussed in detail:
@@ -161,7 +173,8 @@ The following experiments are discussed in detail:
 - Domain knowledge (Fig. 6)
 - Domain knowledge (Fig. 7)
 
-The following document provides the details and runnable scripts re-creating the pipeline:
+The following document provides the details and runnable scripts re-creating
+the pipeline:
 
 [2.3-case-study-data-analysis-and-graphs.Rmd](2.3-case-study-data-analysis-and-graphs.Rmd)
 

@@ -1,7 +1,7 @@
 ~~~
 This is an R markdown document. It's like a markdown document, but has 
 executable snippets of code that do the work (in various languages, including
-bash, Python, R). It can be viewed using Rstudio---we recommend doing this.
+bash, Python, R). It can be viewed using RStudio---we recommend doing this.
 
     rstudio README.Rmd
 
@@ -66,9 +66,9 @@ The artifact consists of the following parts:
   queries from the paper, performing data analysis and making the graphs from 
   the paper.
 
-Each part is described in one or more separate Rmd documents.
+Each part is described in one or more separate RMD documents.
 
-| Part/Section                      |  Rmd file                                                                                  |
+| Part/Section                      |  RMD file                                                                                  |
 |:--------------------------------- | :----------------------------------------------------------------------------------------- |
 | Prerequisites                     | [0-prerequisites.Rmd](0-prerequisites.Rmd)                                                 |
 | Getting started                   | [1-getting-started.Rmd](1-getting-started.Rmd)                                             |
@@ -133,9 +133,9 @@ codedj-ecoop-artifact
 We decided not to replicate the caching performance table from the paper, 
 for practical reasons: 
 
-- The difference in caching performance is only noticable in large datasets, 
+- The difference in caching performance is only noticeable in large datasets, 
   however, torturing the cache using those takes many days;
-- The results are uinlikely to be replicable on other systems, since the 
+- The results are unlikely to be replicable on other systems, since the 
   caches require large amounts of disk space and RAM to work with very large 
   datasets;
 - Djanco comes pre-tuned---we would have to provide a separate version of the 
