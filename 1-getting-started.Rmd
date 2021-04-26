@@ -216,7 +216,7 @@ pub fn my_query(database: &Database, _log: &Log, output: &Path) -> Result<(), st
 The next step is to generate a run script for the queries. This requires that
 the `djanco` command be installed in `cargo`:
 
-```
+```{bash}
 cargo install --git https://github.com/PRL-PRG/cargo-djanco
 ```
 
